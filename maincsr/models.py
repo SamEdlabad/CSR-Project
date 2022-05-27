@@ -2,15 +2,15 @@ from django.db import models
 
 # Create your models here.
 class CompanyTable(models.Model):
-    company_name=models.CharField(max_length=256)
-    passwd = models.CharField(max_length=32)
+    company_name=models.CharField(max_length=256, unique=True)
+    #passwd = models.CharField(max_length=32)
     no_of_employees= models.IntegerField()
-    phone= models.BigIntegerField()
-    email= models.EmailField()
+    phone= models.BigIntegerField(unique=True)
+    email= models.EmailField(unique=True)
     address= models.TextField()
     description= models.TextField()
-    activity_status=models.BooleanField()
-    total_amount_donated= models.BigIntegerField()
+    activity_status=models.BooleanField(default=True)
+    total_amount_donated= models.BigIntegerField(default=0)
     cap_available= models.BigIntegerField()
 
 
@@ -19,15 +19,15 @@ class CompanyTable(models.Model):
 
 
 class NGOTable(models.Model):
-    ngo_name = models.CharField(max_length=256)
-    passwd = models.CharField(max_length = 32)
+    ngo_name = models.CharField(max_length=256, unique=True)
+    #passwd = models.CharField(max_length = 32)
     no_of_employees= models.IntegerField()
-    phone = models.BigIntegerField()
-    email = models.EmailField()
+    phone = models.BigIntegerField(unique=True)
+    email = models.EmailField(unique=True)
     address = models.TextField()
     description= models.TextField()
-    activity_status = models.BooleanField()
-    total_recd = models.BigIntegerField()
+    activity_status = models.BooleanField(default=True)
+    total_recd = models.BigIntegerField(default=0)
     min_cap_reqd = models.BigIntegerField()
 
     def __str__(self):
@@ -38,8 +38,8 @@ class CompRep(models.Model):
     #passwd = models.ForeignKey(NGOTable, on_delete = models.CASCADE)
     fname=models.CharField(max_length=256)
     lname=models.CharField(max_length=256)
-    phone = models.BigIntegerField()
-    email = models.EmailField()
+    r_phone = models.BigIntegerField(unique=True)
+    r_email = models.EmailField(unique=True)
 
     def __str__(self):
         return f"{self.fname} {self.lname}"
@@ -50,8 +50,8 @@ class NGORep(models.Model):
     #passwd = models.ForeignKey(NGOTable.passwd, on_delete = models.CASCADE)
     fname = models.CharField(max_length=256)
     lname = models.CharField(max_length=256)
-    phone = models.BigIntegerField()
-    email = models.EmailField()
+    r_phone = models.BigIntegerField(unique=True)
+    r_email = models.EmailField(unique=True)
 
     def __str__(self):
         return f"{self.fname} {self.lname}"
