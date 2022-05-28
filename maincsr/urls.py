@@ -5,9 +5,11 @@ from . import views
 urlpatterns = [
     path('', views.home),
     path('home/', views.home),
-    #above two lines of code take yyou to the same page, the second path is added to facilitate logout redirect
-    #path('login-page/', views.login_page),
+    #above two lines of code take you to the same page, the second path is added to facilitate logout redirect
+    path('login/', views.login, name= "login"),
+    path('logout/', views.logout, name= "logout"),
     path('sign-up-page/', views.signup_page),
     path('Company-sign-up-page/', views.company_signup_page),
     path('NGO-sign-up-page/', views.ngo_signup_page),
+    path('dashboard/', views.dashboard)
 ]

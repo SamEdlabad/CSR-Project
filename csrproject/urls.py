@@ -19,7 +19,7 @@ from django.urls import include, path
 urlpatterns = [
     path('', include('maincsr.urls')), #Links to the url file inside the app main.csr
     #the above code shows that every url in the app file is prefixed by '' when run
-    path('', include('django.contrib.auth.urls')), #here we are acessing all the authentication urls that django provides
+
     path('admin/', admin.site.urls),
     
 ]

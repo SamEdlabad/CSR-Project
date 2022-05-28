@@ -44,21 +44,24 @@
         </div>
         <div class="col-end-7 col-span-3 w-full max-w-xs ">
 
-            <form class="bg-white shadow-xl rounded px-8 pt-6 pb-8 mb-4" method="post">
-                {% csrf_token %}{{form|crispy}}
-                <!--csrf_token helps us protect website from csrf hacks-->
-                <!--form|crispy is a django filter that lets us use the crispy forms we have installed with pip-->
-                <!--<div class="mb-4">
+            <form class="bg-white shadow-xl rounded px-8 pt-6 pb-8 mb-4" method="post" action={% url 'login' %}>
+                {% csrf_token %}
+                <div>
+                    {% for message in messages %}
+                    <p class="mb-2 text-xl font-normal tracking-tight text-red-600 dark:text-white">{{message}}</p>
+                    {% endfor %}
+                </div>
+                <div class="mb-4">
                     <label class="block text-gray-800 text-sm font-bold mb-2" for="username">
                 Username
                     </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Username">
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Username" name="username">
                 </div>
                 <div class="mb-6 ">
                     <label class="block text-gray-800 text-sm font-bold mb-2" for="password">
                     Password
                     </label>
-                    <input class="shadow border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="******************">
+                    <input class="shadow border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="******************" name="password">
 
                 </div>
                 -->

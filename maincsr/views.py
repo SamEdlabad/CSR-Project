@@ -3,7 +3,8 @@ from django.http import HttpResponse
 from .models import *
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, auth
+from django.contrib import messages
 
 
 # Create your views here.
@@ -31,9 +32,11 @@ def company_signup_page(request): # view for copany signup page
 
         if password==password_check:
             if User.objects.filter(username=username).exists():
-                print("Username already exists.")
+                messages.info(request, "Username taken.")
+                return redirect('/Company-sign-up-page')
             elif User.objects.filter(email=email).exists():
-                print("Email already exists.")
+                messages.info(request, "Email taken.")
+                return redirect('/Company-sign-up-page')
             else:
                 user=User.objects.create_user(username=username, password= password, email=email, first_name=fname, last_name=lname)
                 user.save()
@@ -59,9 +62,10 @@ def company_signup_page(request): # view for copany signup page
                 rep.save()
                 
         else:
-            print("User not created.")
+            messages.info(request, "Passwords not matching.")
+            return redirect('/Company-sign-up-page')
 
-        return redirect('/')
+        return redirect('/login')
 
     else:
         return render(request, "registration/compsignuppage.html")
@@ -84,9 +88,11 @@ def ngo_signup_page(request): # view for ngo signup page
 
         if password==password_check:
             if User.objects.filter(username=username).exists():
-                print("Username already exists.")
+                messages.info(request, "Username taken.")
+                return redirect('/NGO-sign-up-page')
             elif User.objects.filter(email=email).exists():
-                print("Email already exists.")
+                messages.info(request, "Email taken.")
+                return redirect('/NGO-sign-up-page')
             else:
                 user=User.objects.create_user(username=username, password= password, email=email, first_name=fname, last_name=lname)
                 user.save()
@@ -113,11 +119,36 @@ def ngo_signup_page(request): # view for ngo signup page
                 
         else:
             print("User not created.")
+            return redirect('/NGO-sign-up-page')
         
-        return redirect('/')
+        return redirect('/login')
 
     else:
-        return render(request, "registration/ngosignuppage.html", {})
+        return render(request, "registration/ngosignuppage.html")
+
+def login(request):
+    if request.method=='POST':
+        username= request.POST['username']
+        password= request.POST['password']
+
+        user= auth.authenticate(username=username,password=password)
+
+        if user is not None:
+            auth.login(request,user)
+            return redirect('/dashboard')
+
+        else:
+            messages.info(request, "Email or password is incorrect.")
+            return redirect("/login")
+    else:
+        return render(request, "registration/login.html")
+
+def dashboard(request):
+    return render(request, "main/dashboard.html")
+
+def logout(request):
+    auth.logout(request)
+    return redirect('')
 
 
 

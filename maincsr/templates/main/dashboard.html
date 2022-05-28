@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSR Manager Homepage</title>
+    <!---Adding tailwind css-->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sora: "'Sora', 'sans-serif'"
+
+                    },
+                    colors: {
+                        clifford: '#da373d',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800&family=Sora&display=swap" rel="stylesheet">
+    <!--We have added tailwind CSS and configured themes-->
+</head>
+
+<body class="font-sora ml-10">
+    <div class="md:flex grid grid-cols-6 gap-4">
+        <div class="col-start-1 col-end-3">
+            <h1 class="underline decoration-indigo-500 text-justify text-5xl dark:text-white font-medium dark:text-white mt-20 "> Welcome to your dashboard! </h1>
+        </div>
+        <div class="col-end-7 col-span-3 mt-20 ml-80">
+            <form action="/login">
+                <button type="button " class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-inndigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
+            px-6 py-3.5 text-center mr-2 mb-2 ">
+                Log out.
+                </button>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>
