@@ -4,7 +4,8 @@ from .models import *
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User, auth
-from django.contrib import messages
+from django.contrib import messages #to display error messages
+from django.urls import reverse
 
 
 # Create your views here.
@@ -30,18 +31,17 @@ def company_signup_page(request): # view for copany signup page
         r_email= request.POST['r_email ']
         r_phone_no= request.POST['r_phone_no ']
 
-        if password==password_check:
-            if User.objects.filter(username=username).exists():
+        if password==password_check: #to check if confirm password option works
+            if User.objects.filter(username=username).exists(): #to check if the username already exists
                 messages.info(request, "Username taken.")
                 return redirect('/Company-sign-up-page')
             elif User.objects.filter(email=email).exists():
                 messages.info(request, "Email taken.")
                 return redirect('/Company-sign-up-page')
             else:
-                user=User.objects.create_user(username=username, password= password, email=email, first_name=fname, last_name=lname)
+                user=User.objects.create_user(username=username, password= password, email=email, first_name=fname, last_name=lname) #default table created django
                 user.save()
-                print("User created.")
-                comp= CompanyTable( 
+                comp= CompanyTable( #storing the appropriate details in company table
                     company_name=username,
                     no_of_employees= number_of_employees,
                     phone= phone_no,
@@ -51,7 +51,7 @@ def company_signup_page(request): # view for copany signup page
                     cap_available= capital_available
                 )
                 comp.save()
-                rep= CompRep(
+                rep= CompRep( #storing the appropriate details in representative table
                     company_id = comp,
                     fname = fname,
                     lname = lname,
@@ -62,10 +62,10 @@ def company_signup_page(request): # view for copany signup page
                 rep.save()
                 
         else:
-            messages.info(request, "Passwords not matching.")
+            messages.info(request, "Passwords not matching.") #returns error message
             return redirect('/Company-sign-up-page')
 
-        return redirect('/login')
+        return redirect('/login') #redirects to login page
 
     else:
         return render(request, "registration/compsignuppage.html")
@@ -90,11 +90,13 @@ def ngo_signup_page(request): # view for ngo signup page
             if User.objects.filter(username=username).exists():
                 messages.info(request, "Username taken.")
                 return redirect('/NGO-sign-up-page')
+
             elif User.objects.filter(email=email).exists():
                 messages.info(request, "Email taken.")
                 return redirect('/NGO-sign-up-page')
+
             else:
-                user=User.objects.create_user(username=username, password= password, email=email, first_name=fname, last_name=lname)
+                user=User.objects.create_user(username=username, password= password , email=email, first_name=fname, last_name=lname) #password will be hashed in table
                 user.save()
                 print("User created.")
                 ngo= NGOTable( 
@@ -126,16 +128,18 @@ def ngo_signup_page(request): # view for ngo signup page
     else:
         return render(request, "registration/ngosignuppage.html")
 
+
+
 def login(request):
     if request.method=='POST':
         username= request.POST['username']
         password= request.POST['password']
 
-        user= auth.authenticate(username=username,password=password)
+        user= auth.authenticate(username=username,password=password) #default django authentication protocol that we are calling
 
         if user is not None:
-            auth.login(request,user)
-            return redirect('/dashboard')
+            auth.login(request,user) #django function allows you to log in
+            return redirect(f"/dashboard/{username}")
 
         else:
             messages.info(request, "Email or password is incorrect.")
@@ -143,11 +147,27 @@ def login(request):
     else:
         return render(request, "registration/login.html")
 
-def dashboard(request):
-    return render(request, "main/dashboard.html")
+
+def dashboard(request, username):
+        try:
+            data= CompanyTable.objects.get(company_name=username)
+            return render(request, "main/dashboard.html", {'about': data.description,
+            'email': data.email,
+            'phone': data.phone,
+            'address': data.address
+            })
+        except:
+            data= NGOTable.objects.get(ngo_name=username)
+            return render(request, "main/dashboard.html", {'about': data.description,
+            'email': data.email,
+            'phone': data.phone,
+            'address': data.address
+            })
+
+
 
 def logout(request):
-    auth.logout(request)
+    auth.logout(request)#default django logout function
     return redirect('')
 
 
