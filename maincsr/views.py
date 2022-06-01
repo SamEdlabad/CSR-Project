@@ -6,7 +6,10 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User, auth
 from django.contrib import messages #to display error messages
 from django.urls import reverse
+import time
 
+attempts=0#no of attempts made
+WAIT=False#Condition that idicates whether if the User is to wait
 
 # Create your views here.
 def home(request): # view for homepage
@@ -32,7 +35,13 @@ def company_signup_page(request): # view for copany signup page
         r_phone_no= request.POST['r_phone_no ']
 
         if password==password_check: #to check if confirm password option works
-            if User.objects.filter(username=username).exists(): #to check if the username already exists
+            if len(password) < 5:                #to check password length
+                messages.info(request, "Password too short. Atleast 5 characters are required.")
+                return redirect('/Company-sign-up-page')
+            elif len(password) > 50:             #to check password length
+                messages.info(request, "Password too long. Atmost 50 characters are required.")
+                return redirect('/Company-sign-up-page')
+            elif User.objects.filter(username=username).exists(): #to check if the username already exists
                 messages.info(request, "Username taken.")
                 return redirect('/Company-sign-up-page')
             elif User.objects.filter(email=email).exists():
@@ -87,10 +96,15 @@ def ngo_signup_page(request): # view for ngo signup page
         r_phone_no= request.POST['r_phone_no ']
 
         if password==password_check:
-            if User.objects.filter(username=username).exists():
+            if len(password) < 5:      #to check password length
+                messages.info(request, "Password too short. At least 5 characters are required.")
+                return redirect('/NGO-sign-up-page')
+            elif len(password) > 50:   #to check password length
+                messages.info(request, "Password too long. At most 50 characters are required.")
+                return redirect('/NGO-sign-up-page')
+            elif User.objects.filter(username=username).exists():
                 messages.info(request, "Username taken.")
                 return redirect('/NGO-sign-up-page')
-
             elif User.objects.filter(email=email).exists():
                 messages.info(request, "Email taken.")
                 return redirect('/NGO-sign-up-page')
@@ -131,18 +145,30 @@ def ngo_signup_page(request): # view for ngo signup page
 
 
 def login(request):
+    global WAIT,attempts
+    attempts+=1
+    if WAIT==True:#If the user is to be made to wait, a timer for 30 seconds is set while the user is denied any controls
+        time.sleep(30)#Become inactive for 30 secs
+        WAIT=False;Attempts=0
+        return render(request,"registration/login.html",{"WAIT":False})
     if request.method=='POST':
         username= request.POST['username']
         password= request.POST['password']
 
         user= auth.authenticate(username=username,password=password) #default django authentication protocol that we are calling
-
         if user is not None:
             auth.login(request,user) #django function allows you to log in
             return redirect(f"/dashboard/{username}")
+            attempts=0
 
         else:
-            messages.info(request, "Email or password is incorrect.")
+            if attempts>5: #If more than 5 attempts are made, the user's panel is frozen for 30 seconds
+                messages.info(request,"You have exceeded 5 attempts of logging in. Please hit refresh to begin cooldown timer.")
+                WAIT=True
+                return render(request,"registration/login.html",{'WAIT':True})
+   
+
+            messages.info(request, "Username or password is incorrect.")
             return redirect("/login")
     else:
         return render(request, "registration/login.html")
