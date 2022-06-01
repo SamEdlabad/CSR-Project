@@ -1,11 +1,12 @@
 from django.db import models
+from django.core.validators import RegexValidator
 
 # Create your models here.
 class CompanyTable(models.Model):
     company_name=models.CharField(max_length=256, unique=True)
     #passwd = models.CharField(max_length=32)
     no_of_employees= models.IntegerField()
-    phone= models.BigIntegerField(unique=True)
+    phone = models.CharField(max_length=20,null=True, validators=[RegexValidator(r'^\d{3}-\d{3}-\d{4}$')])
     email= models.EmailField(unique=True)
     address= models.TextField()
     description= models.TextField()
@@ -22,7 +23,7 @@ class NGOTable(models.Model):
     ngo_name = models.CharField(max_length=256, unique=True)
     #passwd = models.CharField(max_length = 32)
     no_of_employees= models.IntegerField()
-    phone = models.BigIntegerField(unique=True)
+    phone = models.CharField(max_length=20,null=True, validators=[RegexValidator(r'^\d{3}-\d{3}-\d{4}$')])
     email = models.EmailField(unique=True)
     address = models.TextField()
     description= models.TextField()
@@ -38,7 +39,7 @@ class CompRep(models.Model):
     #passwd = models.ForeignKey(NGOTable, on_delete = models.CASCADE)
     fname=models.CharField(max_length=256)
     lname=models.CharField(max_length=256)
-    r_phone = models.BigIntegerField(unique=True)
+    r_phone = models.CharField(max_length=20,null=True, validators=[RegexValidator(r'^\d{3}-\d{3}-\d{4}$')])
     r_email = models.EmailField(unique=True)
 
     def __str__(self):
@@ -50,7 +51,7 @@ class NGORep(models.Model):
     #passwd = models.ForeignKey(NGOTable.passwd, on_delete = models.CASCADE)
     fname = models.CharField(max_length=256)
     lname = models.CharField(max_length=256)
-    r_phone = models.BigIntegerField(unique=True)
+    r_phone = models.CharField(max_length=20,null=True, validators=[RegexValidator(r'^\d{3}-\d{3}-\d{4}$')])
     r_email = models.EmailField(unique=True)
 
     def __str__(self):

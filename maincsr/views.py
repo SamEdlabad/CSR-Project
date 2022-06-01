@@ -47,13 +47,16 @@ def company_signup_page(request): # view for copany signup page
             elif User.objects.filter(email=email).exists():
                 messages.info(request, "Email taken.")
                 return redirect('/Company-sign-up-page')
+            elif CompRep.objects.filter(r_email=r_email).exists():
+                messages.info(request, "Representative email taken.")
+                return redirect('/Company-sign-up-page')
             else:
                 user=User.objects.create_user(username=username, password= password, email=email, first_name=fname, last_name=lname) #default table created django
                 user.save()
                 comp= CompanyTable( #storing the appropriate details in company table
                     company_name=username,
                     no_of_employees= number_of_employees,
-                    phone= phone_no,
+                    phone=phone_no,
                     email=email,
                     address= address,
                     description= description,
@@ -108,7 +111,6 @@ def ngo_signup_page(request): # view for ngo signup page
             elif User.objects.filter(email=email).exists():
                 messages.info(request, "Email taken.")
                 return redirect('/NGO-sign-up-page')
-
             else:
                 user=User.objects.create_user(username=username, password= password , email=email, first_name=fname, last_name=lname) #password will be hashed in table
                 user.save()
