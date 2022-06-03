@@ -7,6 +7,9 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages #to display error messages
 from django.urls import reverse
 import time
+from validate_email import validate_email#for email validation
+def EMAILCHECK(Email):
+    return validate_email(Email,verify=True)
 
 attempts=0#no of attempts made
 WAIT=False#Condition that idicates whether if the User is to wait
@@ -45,10 +48,16 @@ def company_signup_page(request): # view for copany signup page
                 messages.info(request, "Username taken.")
                 return redirect('/Company-sign-up-page')
             elif User.objects.filter(email=email).exists():
-                messages.info(request, "Email taken.")
+                messages.info(request, "Company Email taken.")
                 return redirect('/Company-sign-up-page')
             elif CompRep.objects.filter(r_email=r_email).exists():
                 messages.info(request, "Representative email taken.")
+                return redirect('/Company-sign-up-page')
+            elif not EMAILCHECK(email):
+                messages.info(request, "Company Email invalid.")
+                return redirect('/Company-sign-up-page')
+            elif not EMAILCHECK(r_email):
+                messages.info(request, "Representative email invalid.")
                 return redirect('/Company-sign-up-page')
             else:
                 user=User.objects.create_user(username=username, password= password, email=email, first_name=fname, last_name=lname) #default table created django
@@ -76,8 +85,6 @@ def company_signup_page(request): # view for copany signup page
         else:
             messages.info(request, "Passwords not matching.") #returns error message
             return redirect('/Company-sign-up-page')
-
-        return redirect('/login') #redirects to login page
 
     else:
         return render(request, "registration/compsignuppage.html")
@@ -109,8 +116,17 @@ def ngo_signup_page(request): # view for ngo signup page
                 messages.info(request, "Username taken.")
                 return redirect('/NGO-sign-up-page')
             elif User.objects.filter(email=email).exists():
-                messages.info(request, "Email taken.")
+                messages.info(request, "NGO Email taken.")
                 return redirect('/NGO-sign-up-page')
+            elif NGORep.objects.filter(r_email=r_email).exists():
+                messages.info(request, "Representative email taken.")
+                return redirect('/Company-sign-up-page')
+            elif not EMAILCHECK(email):
+                messages.info(request, "NGO Email invalid.")
+                return redirect('/Company-sign-up-page')
+            elif not EMAILCHECK(r_email):
+                messages.info(request, "Representative email invalid.")
+                return redirect('/Company-sign-up-page')
             else:
                 user=User.objects.create_user(username=username, password= password , email=email, first_name=fname, last_name=lname) #password will be hashed in table
                 user.save()
@@ -134,12 +150,9 @@ def ngo_signup_page(request): # view for ngo signup page
 
                 )
                 rep.save()
-                
         else:
-            print("User not created.")
+            messages.info(request, "Passwords not matching.") #returns error message
             return redirect('/NGO-sign-up-page')
-        
-        return redirect('/login')
 
     else:
         return render(request, "registration/ngosignuppage.html")
