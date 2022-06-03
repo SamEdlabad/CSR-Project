@@ -161,12 +161,12 @@ def ngo_signup_page(request): # view for ngo signup page
 
 def login(request):
     global WAIT,attempts
-    attempts+=1
     if WAIT==True:#If the user is to be made to wait, a timer for 30 seconds is set while the user is denied any controls
         time.sleep(30)#Become inactive for 30 secs
-        WAIT=False;Attempts=0
+        WAIT=False;attempts=0
         return render(request,"registration/login.html",{"WAIT":False})
     if request.method=='POST':
+        attempts+=1
         username= request.POST['username']
         password= request.POST['password']
 
@@ -177,8 +177,8 @@ def login(request):
             attempts=0
 
         else:
-            if attempts>5: #If more than 5 attempts are made, the user's panel is frozen for 30 seconds
-                messages.info(request,"You have exceeded 5 attempts of logging in. Please hit refresh to begin cooldown timer.")
+            if attempts>=3: #If more than 3 attempts are made, the user's panel is frozen for 30 seconds
+                messages.info(request,"You have exceeded 3 attempts of logging in. Please hit refresh and wait for 30 seconds")
                 WAIT=True
                 return render(request,"registration/login.html",{'WAIT':True})
    
