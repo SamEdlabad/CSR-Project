@@ -8,11 +8,20 @@ from django.contrib import messages #to display error messages
 from django.urls import reverse
 import time
 from validate_email import validate_email#for email validation
+from django.conf import settings
+from django.core.mail import send_mail
+import snoop
+
+@snoop
+def mail(subject, message, recipient_list):
+    email_from = settings.EMAIL_HOST_USER
+    send_mail(subject,message,email_from,recipient_list,fail_silently=True)
+
 def EMAILCHECK(Email):
     return validate_email(Email,verify=True)
 
 attempts=0#no of attempts made
-WAIT=False#Condition that idicates whether if the User is to wait
+WAIT=False#Condition that indicates whether if the User is to wait
 
 # Create your views here.
 def home(request): # view for homepage
@@ -21,6 +30,7 @@ def home(request): # view for homepage
 def signup_page(request): # view for general signup page
     return render(request, "main/signuppage.html")
 
+@snoop
 def company_signup_page(request): # view for copany signup page
     if request.method=='POST':
         username= request.POST['username']
@@ -81,14 +91,23 @@ def company_signup_page(request): # view for copany signup page
 
                 )
                 rep.save()
-                
+
+                subject = "Registration has been completed."
+                msg1 = "Hello "+username+"!!!,\nThank you for creating an account on our Platform. \n\nWe look forward to seeing your generosity."
+                msg2 = "\nHope you find it easy to find the right charity.\n--The CSR Platform Team."
+                message = msg1+msg2
+                recipient_list = [email,r_email]
+                mail(subject,message,recipient_list)
         else:
             messages.info(request, "Passwords not matching.") #returns error message
             return redirect('/Company-sign-up-page')
 
+        return redirect('/login')
+
     else:
         return render(request, "registration/compsignuppage.html")
 
+@snoop
 def ngo_signup_page(request): # view for ngo signup page
     if request.method=='POST':
         username= request.POST['username']
@@ -150,9 +169,17 @@ def ngo_signup_page(request): # view for ngo signup page
 
                 )
                 rep.save()
+                subject = 'Registration completed Sucessfully'
+                msg1 = 'Hello'+username+'!!!,\nThank you for creating an account with our Platform.'
+                msg2 = '\n\nWe look forward to seeing you help everyone.\n--The CSR Platform Team'
+                message = msg1 + msg2
+                recipient_list = [email,r_email]
+                mail(subject,message,recipient_list)
         else:
             messages.info(request, "Passwords not matching.") #returns error message
             return redirect('/NGO-sign-up-page')
+        
+        return redirect('/login')
 
     else:
         return render(request, "registration/ngosignuppage.html")
@@ -190,20 +217,31 @@ def login(request):
 
 
 def dashboard(request, username):
-        try:
-            data= CompanyTable.objects.get(company_name=username)
-            return render(request, "main/dashboard.html", {'about': data.description,
-            'email': data.email,
-            'phone': data.phone,
-            'address': data.address
-            })
-        except:
-            data= NGOTable.objects.get(ngo_name=username)
-            return render(request, "main/dashboard.html", {'about': data.description,
-            'email': data.email,
-            'phone': data.phone,
-            'address': data.address
-            })
+    users=[]
+    try:
+        data= CompanyTable.objects.get(company_name=username)
+        odt = NGOTable.objects.values_list('ngo_name',flat=True)
+        for user in odt:
+            users.append(user)
+        return render(request, "main/dashboard.html", {'about': data.description,
+        'email': data.email,
+        'phone': data.phone,
+        'address': data.address,
+        'users': users,
+        'org_name': username
+        })
+    except:
+        data= NGOTable.objects.get(ngo_name=username)
+        odt = CompanyTable.objects.values_list('company_name',flat=True)
+        for user in odt:
+            users.append(user)
+        return render(request, "main/dashboard.html", {'about': data.description,
+        'email': data.email,
+        'phone': data.phone,
+        'address': data.address,
+        'users': users,
+        'org_name': username
+        })
 
 
 
@@ -211,8 +249,8 @@ def logout(request):
     auth.logout(request)#default django logout function
     return redirect('')
 
-
-
-    
-
-
+@snoop
+def connect(request):
+    org_name = request.POST.get('user')
+    connect_with = request.POST.get('connect_with')
+    return HttpResponse('User will be sent a connectione mail.')
