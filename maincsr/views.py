@@ -7,7 +7,7 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages #to display error messages
 from django.urls import reverse
 import time
-from validate_email import validate_email#for email validation
+#from validate_email import validate_email#for email validation
 from django.conf import settings
 from django.core.mail import send_mail
 import snoop
@@ -17,8 +17,27 @@ def mail(subject, message, recipient_list):
     email_from = settings.EMAIL_HOST_USER
     send_mail(subject,message,email_from,recipient_list,fail_silently=True)
 
+def search(request):
+    cat = request.POST['category']#'NGO'
+    orgname = request.POST['orgname']#'He'
+    emp_count = int(request.POST['emp_count'])#500
+    cap = int(request.POST['cap'])#85000
+    sort_by = request.POST['sort_by']#'ngo_name' or 'company_name'
+    if cat == 'NGO':
+        data = NGOTable.objects.filter(ngo_name__icontains = orgname,
+        no_of_employees__range = (emp_count - 500,emp_count + 500),
+        min_cap_reqd__range = (cap,cap + 10000)).order_by(sort_by)
+        for i in data:
+            print(data)
+    elif cat == 'COMPANY':
+        data = CompanyTable.objects.filter(company_name__icontains = orgname,
+        no_of_employees__range = (emp_count - 500,emp_count + 500),
+        cap_available__range = (cap ,cap + 10000)).order_by(sort_by)
+        for i in data:
+            print(data)
+
 def EMAILCHECK(Email):
-    return validate_email(Email,verify=True)
+    return True#validate_email(Email,verify=True)
 
 attempts=0#no of attempts made
 WAIT=False#Condition that indicates whether if the User is to wait
@@ -243,8 +262,6 @@ def dashboard(request, username):
         'org_name': username
         })
 
-
-
 def logout(request):
     auth.logout(request)#default django logout function
     return redirect('')
@@ -253,4 +270,4 @@ def logout(request):
 def connect(request):
     org_name = request.POST.get('user')
     connect_with = request.POST.get('connect_with')
-    return HttpResponse('User will be sent a connectione mail.')
+    return HttpResponse('User will be sent a connection mail.')
