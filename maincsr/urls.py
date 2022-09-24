@@ -11,5 +11,7 @@ urlpatterns = [
     path('sign-up-page/', views.signup_page),
     path('Company-sign-up-page/', views.company_signup_page),
     path('NGO-sign-up-page/', views.ngo_signup_page),
-    path('dashboard/<str:username>/', views.dashboard)
+    path('dashboard/<str:username>/', views.dashboard),
+
+    path('connect/', views.connect),
 ]

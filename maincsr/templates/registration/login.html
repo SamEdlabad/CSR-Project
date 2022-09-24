@@ -30,7 +30,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800&family=Sora&display=swap" rel="stylesheet">
     <!--We have added tailwind CSS and configured themes-->
 </head>
-
 <body class="font-sora">
     <h1 class="ml-40 underline decoration-indigo-500 text-justify text-5xl dark:text-white font-medium dark:text-white mt-10 ">Welcome back! Login here.</h1>
     <br>
@@ -55,20 +54,25 @@
                     <label class="block text-gray-800 text-sm font-bold mb-2" for="username">
                 Username
                     </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Username" name="username">
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" placeholder="Username" name="username" {% if WAIT == True %}disabled="true"{% endif %}>
                 </div>
                 <div class="mb-6 ">
                     <label class="block text-gray-800 text-sm font-bold mb-2" for="password">
                     Password
                     </label>
-                    <input class="shadow border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="******************" name="password">
+                    <input class="shadow border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" placeholder="******************" name="password" {% if WAIT == True %}disabled="true"{% endif %}>
 
                 </div>
                 -->
                 <br>
                 <div class="flex items-center justify-between">
-                    <button type="submit" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline">
+                    <button type="submit" class={% if WAIT == True %}"bg-indigo-400 hover:bg-indigo-600 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline"
+                    {% else %}"bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline"{% endif %}>
+                        {% if WAIT == True %}
+                        Refresh
+                        {% else %}
                         Sign In
+                        {% endif %}
                     </button>
                 </div>
                 <br>

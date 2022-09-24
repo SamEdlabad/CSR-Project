@@ -21,3 +21,7 @@ pymysql.install_as_MySQLdb()
 ...
 
 then run the file once to install MySQLdb to your site packages.
+
+Import py3dns and validate_email:
+pip install py3dns
+pip install validate_email
