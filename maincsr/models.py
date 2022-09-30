@@ -20,9 +20,13 @@ class CompanyTable(models.Model):
 
 
 class NGOTable(models.Model):
+    regis_num=models.CharField(max_length=256,null=True)
+    state=models.CharField(max_length=256,null=True)
+    district=models.CharField(max_length=256,null=True)
     ngo_name = models.CharField(max_length=256, unique=True)
     #passwd = models.CharField(max_length = 32)
-    no_of_employees= models.IntegerField()
+    pdf=models.FileField(upload_to="CSR-Project/Media/",null=True)
+    no_of_employees= models.IntegerField(null=True)
     phone = models.CharField(max_length=20,null=True, validators=[RegexValidator(r'^\d{3}-\d{3}-\d{4}$')])
     email = models.EmailField(unique=True)
     address = models.TextField()
@@ -30,6 +34,9 @@ class NGOTable(models.Model):
     activity_status = models.BooleanField(default=True)
     total_recd = models.BigIntegerField(default=0)
     min_cap_reqd = models.BigIntegerField()
+    sectors=models.TextField(max_length=512,null=True)#Textfield can store more than 256 characters
+    website=models.CharField(max_length=256,null=True)
+
 
     def __str__(self):
         return self.ngo_name

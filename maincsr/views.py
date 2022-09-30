@@ -104,6 +104,9 @@ def ngo_signup_page(request): # view for ngo signup page
         lname= request.POST['lname ']
         r_email= request.POST['r_email ']
         r_phone_no= request.POST['r_phone_no ']
+        pdf=request.FILES.get("cert")
+        document=NGOTable.objects.create(pdf=pdf)
+        document.save()
 
         if password==password_check:
             if len(password) < 5:      #to check password length
@@ -203,6 +206,7 @@ def dashboard(request, username):
             'email': data.email,
             'phone': data.phone,
             'address': data.address
+            'cert':data.pdf,
             })
 
 
