@@ -82,7 +82,7 @@ DATABASES = {
         'NAME':'csr',
         'HOST':'localhost',
         'USERNAME':'root',
-        'PASSWORD':'PWD123',
+        'PASSWORD':'PWD123'
         'PORT':3306
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
@@ -125,6 +125,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
 MEDIA_URL="/media/"
 MEDIA_ROOT=os.path.join(BASE_DIR,"media")
 STATICFILES_DIRS = [
@@ -139,3 +140,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL= '/dashboard'
 LOGOUT_REDIRECT_URL= '/home'
 #the above two lines of code direct thee user to particular pages after they login/logout
+#the below lines of code is to set up the email service
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_SSL = True
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'csrplatform23@gmail.com'
+EMAIL_HOST_PASSWORD = 'fdueahxcxhrntbem'
