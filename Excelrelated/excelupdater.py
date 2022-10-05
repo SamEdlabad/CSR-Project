@@ -14,5 +14,6 @@ def connectfn(location,query):
     connect.close()#closing connection
     
 
-connectfn(".\\DummyCOMPANIES.xlsx","insert into maincsr_companytable(id,company_name,no_of_employees,phone,email,address,description,activity_status,total_amount_donated,cap_available)values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
-connectfn(".\\DummyNGOs.xlsx","insert into maincsr_ngotable(id,ngo_name,no_of_employees,phone,email,address,description,activity_status,total_recd,min_cap_reqd)values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+#connectfn(".\\DummyCOMPANIES.xlsx","insert into maincsr_companytable(id,company_name,no_of_employees,phone,email,address,description,activity_status,total_amount_donated,cap_available)values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+#connectfn(".\\DummyNGOs.xlsx","insert into maincsr_ngotable(id,ngo_name,no_of_employees,phone,email,address,description,activity_status,total_recd,min_cap_reqd)values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+connectfn(".\\DummyNGOs.xlsx","insert into maincsr_ngotable(id,regis_num,state,district,ngo_name,no_of_employees,phone,email,address,description,activity_status,total_recd,min_cap_reqd,sectors)values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)")
