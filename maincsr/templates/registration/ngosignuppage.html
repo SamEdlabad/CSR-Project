@@ -39,7 +39,7 @@
     </div>
     <div class=" grid grid-cols-6 gap-4">
         <div class="col-start-1 col-end-4">
-            <form class="bg-white shadow-xl rounded px-8 pt-6 pb-8 mb-4" method="post" action="">
+            <form class="bg-white shadow-xl rounded px-8 pt-6 pb-8 mb-4" method="post" action="" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div>
                     {% for message in messages %}
@@ -124,23 +124,24 @@
                     Enter Representative Name:
                     </label>
                     <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="repfname" type="text" placeholder="First Name" name="fname">
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="replnametype=" text " placeholder="Last Name " name="lname ">
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="replname" type=" text " placeholder="Last Name " name="lname">
                 </div>
                 <br>
                 <div>
                     <label class="block text-gray-800 text-sm font-bold mb-2 " for="phoner ">
                     Enter Representative's Phone Number:
                     </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline " id="phoner " type="number "  placeholder="Phone number " name="r_phone_no ">
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline " id="phoner " type="number "  placeholder="Phone number " name="r_phone_no">
                 </div>
                 <br>
                 <div>
                     <label class="block text-gray-800 text-sm font-bold mb-2 " for="emailr ">
                     Enter Representative's email id:
                     </label>
-                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline " id="emailr " type="email " placeholder="Email " name="r_email ">
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline " id="emailr " type="email " placeholder="Email " name="r_email">
                 </div>
                 <br>
+                <input type="file" name="cert" id="cert"></input>
                 <div>
                     <button type="submit " class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-inndigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg
                         text-base px-6 py-3.5 text-center mr-2 mb-2 ">
@@ -151,6 +152,10 @@
                 <div>
                     <p> Already have an account? <a class="text-decoration-line: underline text-indigo-400 " href="/login ">Log in here</a>!</p>
                 </div>
+                <BR>
+            </form>    
+            
+
 
         </div>
         <div class="col-end-7 col-span-3 ml-20 ">
@@ -235,8 +240,7 @@
                         " transform="translate(-253.01352 -93.71349) " fill="#6c63ff "/><path d="M611.122,226.483l-21.15967,94.56a60.38421,60.38421,0,0,0-8.48-1.92l29.62988-92.64Z " transform="translate(-253.01352 -93.71349) " fill="#3f3d56 "/></svg>
                         
                             
-        </div>
-    </form>
+    </div>
 </body>
 
 </html>

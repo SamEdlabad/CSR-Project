@@ -152,10 +152,11 @@ def ngo_signup_page(request): # view for ngo signup page
         address= request.POST['address']
         description= request.POST['description']
         fname= request.POST['fname']
-        lname= request.POST['lname ']
-        r_email= request.POST['r_email ']
-        r_phone_no= request.POST['r_phone_no ']
-
+        lname= request.POST['lname']
+        r_email= request.POST['r_email']
+        r_phone_no= request.POST['r_phone_no']
+        pdf=request.FILES.get("cert")
+        
         if password==password_check:
             if len(password) < 5:      #to check password length
                 messages.info(request, "Password too short. At least 5 characters are required.")
@@ -189,7 +190,8 @@ def ngo_signup_page(request): # view for ngo signup page
                     email=email,
                     address= address,
                     description= description,
-                    min_cap_reqd= capital_reqd
+                    min_cap_reqd= capital_reqd,
+                    pdf=pdf
                 )
                 ngo.save()
                 rep= NGORep(
@@ -210,9 +212,7 @@ def ngo_signup_page(request): # view for ngo signup page
         else:
             messages.info(request, "Passwords not matching.") #returns error message
             return redirect('/NGO-sign-up-page')
-        
-        return redirect('/login')
-
+        return redirect("/login")
     else:
         return render(request, "registration/ngosignuppage.html")
 
@@ -249,6 +249,7 @@ def login(request):
 
 
 def dashboard(request, username):
+
     users=[]
     try:
         data= CompanyTable.objects.get(company_name=username)
@@ -271,9 +272,11 @@ def dashboard(request, username):
         'email': data.email,
         'phone': data.phone,
         'address': data.address,
+        'cert':data.pdf,
         'users': users,
-        'org_name': username 
+        'org_name': username
         })
+
 
 def logout(request):
     auth.logout(request)#default django logout function

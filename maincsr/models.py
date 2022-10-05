@@ -20,16 +20,23 @@ class CompanyTable(models.Model):
 
 
 class NGOTable(models.Model):
+    regis_num=models.CharField(max_length=256,null=True)
+    state=models.CharField(max_length=256,null=True)
+    district=models.CharField(max_length=256,null=True)
     ngo_name = models.CharField(max_length=256, unique=True)
     #passwd = models.CharField(max_length = 32)
-    no_of_employees= models.IntegerField()
+    pdf=models.FileField(null=True)
+    no_of_employees= models.IntegerField(null=True)
     phone = models.CharField(max_length=20,null=True, validators=[RegexValidator(r'^\d{3}-\d{3}-\d{4}$')])
     email = models.EmailField(unique=True)
     address = models.TextField()
     description= models.TextField()
     activity_status = models.BooleanField(default=True)
     total_recd = models.BigIntegerField(default=0)
-    min_cap_reqd = models.BigIntegerField()
+    min_cap_reqd = models.BigIntegerField(null=True)
+    sectors=models.TextField(max_length=512,null=True)#Textfield can store more than 256 characters
+    website=models.CharField(max_length=256,null=True)
+
 
     def __str__(self):
         return self.ngo_name
@@ -49,8 +56,8 @@ class CompRep(models.Model):
 class NGORep(models.Model):
     ngo_id = models.ForeignKey(NGOTable, on_delete = models.CASCADE)
     #passwd = models.ForeignKey(NGOTable.passwd, on_delete = models.CASCADE)
-    fname = models.CharField(max_length=256)
-    lname = models.CharField(max_length=256)
+    fname = models.CharField(max_length=256,null=True)
+    lname = models.CharField(max_length=256,null=True)
     r_phone = models.CharField(max_length=20,null=True, validators=[RegexValidator(r'^\d{3}-\d{3}-\d{4}$')])
     r_email = models.EmailField(unique=True)
 
