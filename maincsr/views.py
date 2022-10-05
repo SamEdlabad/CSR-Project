@@ -20,21 +20,34 @@ def mail(subject, message, recipient_list):
 def search(request):
     cat = request.POST['category']#'NGO'
     orgname = request.POST['orgname']#'He'
-    emp_count = int(request.POST['emp_count'])#500
+    emp_count = request.POST['emp_count']#500
     cap = int(request.POST['cap'])#85000
+    state = request.POST['state']
+    sector = request.POST['sector']
     sort_by = request.POST['sort_by']#'ngo_name' or 'company_name'
+    order = request.POST['order']
     if cat == 'NGO':
-        data = NGOTable.objects.filter(ngo_name__icontains = orgname,
-        no_of_employees__range = (emp_count - 500,emp_count + 500),
-        min_cap_reqd__range = (cap,cap + 10000)).order_by(sort_by)
-        for i in data:
-            print(data)
+        data = NGOTable.objects.filter(ngo_name__icontains = orgname,)# i here makes it non case sensitive
+        if cap != 0:
+            data = data.filter(min_cap_reqd__range = (cap,cap + 10000))
     elif cat == 'COMPANY':
-        data = CompanyTable.objects.filter(company_name__icontains = orgname,
-        no_of_employees__range = (emp_count - 500,emp_count + 500),
-        cap_available__range = (cap ,cap + 10000)).order_by(sort_by)
-        for i in data:
-            print(data)
+        data = CompanyTable.objects.filter(company_name__icontains = orgname)
+        if cap != 0:
+            data = data.filter(cap_available__range = (cap ,cap + 10000))
+
+    if emp_count != 'None':
+        emp_count = int(emp_count)
+        data = data.filter(no_of_employees__range = (emp_count - 500,emp_count + 500))# range is the between and 
+    if state != 'None':
+        data = data.filter(state__exact = state)#exact as the name suggests means exact value
+    if sector != 'None':
+        data = data.filter(sectors__in = sector)
+    if sort_by != 'None':
+        if order  == 'ascending':
+            data = data.order_by(sort_by)
+        elif order == 'descending':
+            sort_by = '-'+sort_by
+            data = data.order_by(sort_by)
 
 def EMAILCHECK(Email):
     return True#validate_email(Email,verify=True)
@@ -259,7 +272,7 @@ def dashboard(request, username):
         'phone': data.phone,
         'address': data.address,
         'users': users,
-        'org_name': username
+        'org_name': username 
         })
 
 def logout(request):

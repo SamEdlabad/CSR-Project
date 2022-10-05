@@ -56,9 +56,3 @@ class NGORep(models.Model):
 
     def __str__(self):
         return f"{self.fname} {self.lname}"
-
-# class TransacHist(models.Model):
-#     company_id=models.ForeignKey(CompanyTable.company_id, on_delete=models.CASCADE)
-#     ngo_id = models.ForeignKey(NGOTable.ngo_id, on_delete = models.CASCADE)
-
-#     transacamt = models.
