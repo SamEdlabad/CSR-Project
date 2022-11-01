@@ -7,6 +7,7 @@ use command : python3 -m venv <virtualenvname>
 
 2. Download django without using sudo as it might cause huge errors
 use command : pip3 install django
+              pip install django-crispy-forms
   
 3. Connect your project with mysql
 use command: pip3 install mysqlclient

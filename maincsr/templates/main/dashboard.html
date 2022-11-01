@@ -35,15 +35,30 @@
         <div class="col-start-1 col-end-3">
             <h1 class="underline decoration-indigo-500 text-justify text-5xl dark:text-black font-medium dark:text-black mt-20 "> Welcome to your dashboard! </h1>
         </div>
-        <div class="col-end-7 col-span-3 mt-20 ml-80">
+
+    </div>
+
+    <div class="md:flex grid grid-cols-6 ">
+        <div class="col-end-3 col-span-3 mt-10">
+            <form action="/search">
+                <button type="button " class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
+            px-6 py-3.5 text-center mr-2 mb-2 ">
+                Search
+                </button>
+            </form>
+        </div>
+        <div class="col-end-6 col-span-3 mt-10">
             <form action="/login">
-                <button type="button " class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-inndigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
+                <button type="button " class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
             px-6 py-3.5 text-center mr-2 mb-2 ">
                 Log out.
                 </button>
             </form>
         </div>
+
     </div>
+
+
 
     <div>
         <h1 class=" text-indigo-600 font-extrabold underline decoration-stone-700 text-justify text-4xl dark:text-black font-medium dark:text-black mt-5 "> Your Profile </h1>
@@ -77,19 +92,21 @@
             </div>
         </div>
     </div>
+
+    <br>
+    <br>
+
     <button type="button " class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-inndigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
      px-6 py-3.5 text-center mr-2 mb-2 ">
     <a href = "{{cert.url}}">View Your Certificate</a></button>
     <br>
     <div>
-        <form method ="post" action="/connect/">
-        {% csrf_token %}
-        <input type="hidden" id="user" name="user" value="{{org_name}}">
-        {% for username in users %}
-        <button class="GFG" id="connect_with" name="connect_with" type="submit" value= "{{username}}">Connect with {{username}}</button><br>
-        {% endfor %}
+        <form method="post" action="/connect/">
+            {% csrf_token %}
+            <input type="hidden" id="user" name="user" value="{{org_name}}"> {% for username in users %}
+            <button class="GFG" id="connect_with" name="connect_with" type="submit" value="{{username}}">Connect with {{username}}</button><br> {% endfor %}
         </form>
-    </div> 
+    </div>
 </body>
 
 </html>

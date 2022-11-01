@@ -82,7 +82,7 @@ DATABASES = {
         'NAME':'csr',
         'HOST':'localhost',
         'USERNAME':'root',
-        'PASSWORD':'PWD123'
+        'PASSWORD':'root123',
         'PORT':3306
         # 'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
