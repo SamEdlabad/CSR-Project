@@ -20,38 +20,46 @@ def mail(subject, message, recipient_list):
 def search(request):
     # the for = in html should match the value in brackets
     if request.method=="POST":
-        cat = request.POST['category']#'NGO' - States if NGO or company
-        orgname = request.POST['orgname'] #'He'- Basically organisation name
-        emp_count = request.POST['emp_count']#500
-        cap = int(request.POST['cap'])#85000 - capital available or required based on NGO or company
-        state = request.POST['state'] #drop-down box
-        sector = request.POST['sector'] #drop-down box
-        sort_by = request.POST['sort_by']#'ngo_name' or 'company_name' 
-        order = request.POST['order'] #- by ascending or descending
+        cat = request.POST.get('category')#'NGO' - States if NGO or company
+        orgname = request.POST.get('orgname')#'He'- Basically organisation name
+        
+        emp_count = request.POST.get('emp_count')
+    
+        cap= request.POST.get('cap')
+        state = request.POST.get('state') #drop-down box
+        sector = request.POST.get('sector')#drop-down box
+        sort_by = request.POST.get('sort_by')#'ngo_name' or 'company_name' 
+        order = request.POST.get('order') #- by ascending or descending
+
         if cat == 'NGO':
-            data = NGOTable.objects.filter(ngo_name__icontains = orgname,)# i here makes it non case sensitive
-            if cap != 0:
+            data = NGOTable.objects.filter(ngo_name__icontains = orgname)# i here makes it non case sensitive
+            if cap != '':
                 data = data.filter(min_cap_reqd__range = (cap,cap + 10000))
-            if state != 'None':
+            if state != None:
                 data = data.filter(state__exact = state)#exact as the name suggests means exact value
-            if sector != 'None':
+            if sector != None:
                 data = data.filter(sectors__in = sector)
         elif cat == 'COMPANY':
             data = CompanyTable.objects.filter(company_name__icontains = orgname)
-            if cap != 0:
+            if cap != '':
                 data = data.filter(cap_available__range = (cap ,cap + 10000))
         #replace None by whatever default value is returned by HTML for not filling a column
 
-        if emp_count != 'None':
+        if emp_count !='':
             emp_count = int(emp_count)
             data = data.filter(no_of_employees__range = (emp_count - 500,emp_count + 500))# range is the between and 
 
-        if sort_by != 'None':
+        if sort_by != None:
             if order  == 'Ascending':
                 data = data.order_by(sort_by)
             elif order == 'Descending':
                 sort_by = '-'+sort_by
                 data = data.order_by(sort_by)
+        
+        
+
+
+        return render(request, 'main/results.html' , {'data': data})#edit1
         
 
          #edit 2

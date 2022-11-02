@@ -26,3 +26,9 @@ then run the file once to install MySQLdb to your site packages.
 Import py3dns and validate_email:
 pip install py3dns
 pip install validate_email
+
+4. To push to git repository:
+ git add .
+ git reset venv #if venv exists inside project file
+ git commit -m "message"
+ git push urlname branchname

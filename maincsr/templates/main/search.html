@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSR Manager Homepage</title>
+    <title>Search</title>
     <!---Adding tailwind css-->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -36,14 +36,14 @@
 
 <div class=" grid grid-cols-6 gap-4">
     <div class="col-start-1 col-end-4">
-        <form class="bg-white shadow-xl rounded px-8 pt-6 pb-8 mb-4" method="post" action="results/">
+        <form class="bg-white shadow-xl rounded px-8 pt-6 pb-8 mb-4" method="post" action="search/results">
             {% csrf_token %}
 
             <div>
-                <label for="cat" class="block text-gray-800 text-sm font-bold mb-2">Select type of organization you want to search:</label>
-                <select id="cat" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    <option>Company</option>
-                    <option>NGO</option>
+                <label for='category' class="block text-gray-800 text-sm font-bold mb-2">Select type of organization you want to search:</label>
+                <select name='category' id='category' class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option value="COMPANY">Company</option>
+                    <option value="NGO">NGO</option>
                 </select>
             </div>
             <br>
