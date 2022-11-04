@@ -17,6 +17,7 @@ urlpatterns = [
     path('search/', views.search),
     path('search/results', views.search),
     path('connect/', views.connect),
+    path('search/results/<str:username>',  views.search_result, name="searchresult") #for search results
 ]
 
 if settings.DEBUG:

@@ -59,9 +59,7 @@ def search(request):
         return render(request, 'main/results.html' , {'data': data})#edit1
          #edit 2
     else:
-        return render(request, 'main/search.html')
-
-    
+        return render(request, 'main/search.html')  
 
 def EMAILCHECK(Email):
     return True#validate_email(Email,verify=True)
@@ -261,7 +259,7 @@ def login(request):
 
 
 def dashboard(request, username):
-
+    
     if request.method=="GET": #edit 3
         users=[]
         try:
@@ -300,3 +298,10 @@ def connect(request):
     org_name = request.POST.get('user')
     connect_with = request.POST.get('connect_with')
     return HttpResponse('User will be sent a connection mail.')
+
+def search_result(request):
+    try:
+        val=request.GET.get('username')
+
+    except:
+        pass
