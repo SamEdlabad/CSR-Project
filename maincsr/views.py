@@ -49,19 +49,14 @@ def search(request):
             emp_count = int(emp_count)
             data = data.filter(no_of_employees__range = (emp_count - 500,emp_count + 500))# range is the between and 
 
-        if sort_by != None:
+        if sort_by != 'None':
             if order  == 'Ascending':
                 data = data.order_by(sort_by)
             elif order == 'Descending':
                 sort_by = '-'+sort_by
                 data = data.order_by(sort_by)
-        
-        
-
 
         return render(request, 'main/results.html' , {'data': data})#edit1
-        
-
          #edit 2
     else:
         return render(request, 'main/search.html')
@@ -235,8 +230,6 @@ def ngo_signup_page(request): # view for ngo signup page
     else:
         return render(request, "registration/ngosignuppage.html")
 
-
-
 def login(request):
     global WAIT,attempts
     if WAIT==True:#If the user is to be made to wait, a timer for 30 seconds is set while the user is denied any controls
@@ -297,9 +290,6 @@ def dashboard(request, username):
             'org_name': username
             })
             
-
-        
-
 
 def logout(request):
     auth.logout(request)#default django logout function

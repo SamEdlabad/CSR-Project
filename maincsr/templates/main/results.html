@@ -27,32 +27,44 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@800&family=Sora&display=swap" rel="stylesheet">
 </head>
 
-<body>
-    <h1 class="underline decoration-indigo-500 text-justify text-5xl dark:text-white font-medium dark:text-white mt-5 ml-20 ">
+<body class=" ml-20 mr-10">
+    <h1 class="underline decoration-indigo-500 text-justify text-5xl dark:text-white font-medium dark:text-white mt-5 ">
         Search Results
     </h1>
-    <br> {% for i in data %}
-    <div class="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 ml-20">
-
-        {% if i.company_name != None %}
-        <h5 class="mb-2 text-2xl font-bold tracking-tight text-indigo-600 dark:text-white">{{i.company_name}}</h5>
-        {% else %}
-        <h5 class="mb-2 text-2xl font-bold tracking-tight ttext-indigo-600 dark:text-white">{{i.ngo_name}}</h5>
-        {% endif %}
+    <br>
+    <div class="grid gap-4 grid-cols-3">
+        <!---->
 
 
-        <h3 class="mb-2 text-xl font-bold tracking-tight text-stone-700 dark:text-white">About:</h3>
-        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{i.description}}</p>
+        {% for i in data %}
+        <div class="p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 ">
 
-        <h3 class="mb-2 text-xl font-bold tracking-tight text-stone-700 dark:text-white">Address:</h3>
-        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{i.address}}</p>
+            {% if i.company_name != None %}
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-indigo-600 dark:text-white">{{i.company_name}}</h5>
+            {% else %}
+            <h5 class="mb-2 text-2xl font-bold tracking-tight ttext-indigo-600 dark:text-white">{{i.ngo_name}}</h5>
+            {% endif %}
 
-        <h3 class="mb-2 text-xl font-bold tracking-tight text-stone-700 dark:text-white">Email:</h3>
-        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{i.email}}</p>
+
+            <h3 class="mb-2 text-xl font-bold tracking-tight text-stone-700 dark:text-white">About:</h3>
+            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{i.description}}</p>
+
+            <h3 class="mb-2 text-xl font-bold tracking-tight text-stone-700 dark:text-white">Address:</h3>
+            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{i.address}}</p>
+
+            <h3 class="mb-2 text-xl font-bold tracking-tight text-stone-700 dark:text-white">Email:</h3>
+            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">{{i.email}}</p>
+
+            <a href="{% url %}" class="mt-5 inline-flex items-center py-2 px-3 text-sm font-medium text-center text-white bg-indigo-500 rounded-lg hover:bg-indigo-600 focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:bg-indigo-600 dark:hover:bg-indigo-700 dark:focus:ring-blue-800">
+                Read more
+                <svg aria-hidden="true" class="ml-2 -mr-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            </a>
 
 
+        </div>
+        {% endfor %}
     </div>
-    <br> {% endfor %}
+    <!---->
 
 </body>
 

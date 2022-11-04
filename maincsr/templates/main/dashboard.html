@@ -31,41 +31,39 @@
 
 <body class="font-sora ml-10">
 
-    <div class="md:flex grid grid-cols-6 gap-4">
-        <div class="col-start-1 col-end-3">
-            <h1 class="underline decoration-indigo-500 text-justify text-5xl dark:text-black font-medium dark:text-black mt-20 "> Welcome to your dashboard! </h1>
+    <div class="md:flex mt-20 grid grid-cols-9 gap-2">
+        <div class="col-start-1 col-end-3 gap-5">
+            <h1 class="underline decoration-indigo-500 text-justify text-5xl dark:text-black font-medium dark:text-black "> Welcome to your dashboard! </h1>
         </div>
 
-    </div>
-
-    <div class="md:flex grid grid-cols-6 ">
-        <div class="col-end-3 col-span-3 mt-10">
+        <div class="col-end-6 col-span-3 ml-20">
             <form action="/search">
                 <button type="button " class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
-            px-6 py-3.5 text-center mr-2 mb-2 ">
+            px-10 py-2 text-center">
                 Search
                 </button>
             </form>
         </div>
-        <div class="col-end-6 col-span-3 mt-10">
+        <div class="col-end-9 col-span-3">
             <form action="/login">
                 <button type="button " class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
-            px-6 py-3.5 text-center mr-2 mb-2 ">
+            px-10 py-2 text-center ">
                 Log out.
                 </button>
             </form>
         </div>
 
+
+
+
     </div>
-
-
 
     <div>
         <h1 class=" text-indigo-600 font-extrabold underline decoration-stone-700 text-justify text-4xl dark:text-black font-medium dark:text-black mt-5 "> Your Profile </h1>
     </div>
-    <div class=" grid grid-cols-9 gap-4">
-        <div class="md:flex col-start-1 col-end-4">
-            <div class="mt-5 p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 ">
+    <div class=" grid grid-cols-9 gap-1">
+        <div class="col-start-1 col-end-4">
+            <div class=" mt-5 p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 ">
                 <h3 class="mb-2 text-3xl font-extrabold tracking-tight text-indigo-600 dark:text-white">About</h3>
                 <p class="mb-2 text-xl font-normal tracking-tight text-stone-900 dark:text-white ">
                     {{about}}
@@ -73,7 +71,7 @@
             </div>
 
         </div>
-        <div class="col-start-4 col-span-4">
+        <div class="col-span-4">
             <div class="mt-5 p-6 max-w-sm bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 ">
                 <h1 class="mb-2 text-3xl font-extrabold tracking-tight text-indigo-600 dark:text-white">Contact</h1>
                 <h3 class="mb-2 text-2xl font-extrabold tracking-tight text-stone-700 dark:text-white">Email:</h3>
@@ -94,11 +92,13 @@
     </div>
 
     <br>
-    <br>
-
+    <br>{% if cert.url %}
     <button type="button " class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-inndigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
      px-6 py-3.5 text-center mr-2 mb-2 ">
-    <a href = "{{cert.url}}">View Your Certificate</a></button>
+     {% csrf_token %}
+    
+    <a href = "{{cert.url}}">View Your Certificate</a></button> {% endif %}
+
     <br>
     <div>
         <form method="post" action="/connect/">
