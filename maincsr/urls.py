@@ -8,8 +8,8 @@ urlpatterns = [
     path('', views.home),
     path('home/', views.home),
     #above two lines of code take you to the same page, the second path is added to facilitate logout redirect
-    path('login/', views.login, name= "login"),
-    path('logout/', views.logout, name= "logout"),
+    path('login/', views.login_request, name= "login"),
+    path('logout/', views.logout_request, name= "logout"),
     path('sign-up-page/', views.signup_page),
     path('Company-sign-up-page/', views.company_signup_page),
     path('NGO-sign-up-page/', views.ngo_signup_page),
@@ -17,7 +17,7 @@ urlpatterns = [
     path('search/', views.search),
     path('search/results', views.search),
     path('connect/', views.connect),
-    path('search/results/<str:username>',  views.search_result, name="searchresult") #for search results
+    path('search/search_result/<str:username>',  views.search_result, name="searchresult") #for search results
 ]
 
 if settings.DEBUG:

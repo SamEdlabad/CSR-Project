@@ -12,67 +12,50 @@ from django.conf import settings
 from django.core.mail import send_mail
 import snoop
 
-@snoop
-def mail(subject, message, recipient_list):
-    email_from = settings.EMAIL_HOST_USER
-    send_mail(subject,message,email_from,recipient_list,fail_silently=True)
-
-def search(request):
-    # the for = in html should match the value in brackets
-    if request.method=="POST":
-        cat = request.POST.get('category')#'NGO' - States if NGO or company
-        orgname = request.POST.get('orgname')#'He'- Basically organisation name
-        
-        emp_count = request.POST.get('emp_count')
-    
-        cap= request.POST.get('cap')
-        state = request.POST.get('state') #drop-down box
-        sector = request.POST.get('sector')#drop-down box
-        sort_by = request.POST.get('sort_by')#'ngo_name' or 'company_name' 
-        order = request.POST.get('order') #- by ascending or descending
-
-        if cat == 'NGO':
-            data = NGOTable.objects.filter(ngo_name__icontains = orgname)# i here makes it non case sensitive
-            if cap != '':
-                data = data.filter(min_cap_reqd__range = (cap,cap + 10000))
-            if state != None:
-                data = data.filter(state__exact = state)#exact as the name suggests means exact value
-            if sector != None:
-                data = data.filter(sectors__in = sector)
-        elif cat == 'COMPANY':
-            data = CompanyTable.objects.filter(company_name__icontains = orgname)
-            if cap != '':
-                data = data.filter(cap_available__range = (cap ,cap + 10000))
-        #replace None by whatever default value is returned by HTML for not filling a column
-
-        if emp_count !='':
-            emp_count = int(emp_count)
-            data = data.filter(no_of_employees__range = (emp_count - 500,emp_count + 500))# range is the between and 
-
-        if sort_by != 'None':
-            if order  == 'Ascending':
-                data = data.order_by(sort_by)
-            elif order == 'Descending':
-                sort_by = '-'+sort_by
-                data = data.order_by(sort_by)
-
-        return render(request, 'main/results.html' , {'data': data})#edit1
-         #edit 2
-    else:
-        return render(request, 'main/search.html')  
-
-def EMAILCHECK(Email):
-    return True#validate_email(Email,verify=True)
-
+client = ''
 attempts=0#no of attempts made
 WAIT=False#Condition that indicates whether if the User is to wait
 
-# Create your views here.
 def home(request): # view for homepage
     return render(request, "main/home.html")
 
 def signup_page(request): # view for general signup page
     return render(request, "main/signuppage.html")
+
+def login_request(request):
+    global WAIT,attempts
+    if WAIT==True:#If the user is to be made to wait, a timer for 30 seconds is set while the user is denied any controls
+        time.sleep(30)#Become inactive for 30 secs
+        WAIT=False;attempts=0
+        return render(request,"registration/login.html",{"WAIT":False})
+    if request.method=='POST':
+        attempts+=1
+        username = request.POST['username']
+        password = request.POST['password']
+        user= auth.authenticate(username=username,password=password) #default django authentication protocol that we are calling
+        global client
+        client = username
+        if user is not None:
+            login(request,user) #django function allows you to log in
+            return redirect(f"/dashboard/{username}")
+            attempts=0
+
+        else:
+            if attempts>=3: #If more than 3 attempts are made, the user's panel is frozen for 30 seconds
+                messages.info(request,"You have exceeded 3 attempts of logging in. Please hit refresh and wait for 30 seconds")
+                WAIT=True
+                return render(request,"registration/login.html",{'WAIT':True})
+   
+
+            messages.info(request, "Username or password is incorrect.")
+            return redirect("/login")
+    else:
+        return render(request, "registration/login.html")
+
+@login_required(login_url='/login')
+def logout_request(request):
+    logout(request)#default django logout function
+    return redirect('/home')
 
 @snoop
 def company_signup_page(request): # view for company signup page
@@ -137,7 +120,7 @@ def company_signup_page(request): # view for company signup page
                 rep.save()
 
                 subject = "Registration has been completed."
-                msg1 = "Hello "+username+"!!!,\nThank you for creating an account on our Platform. \n\nWe look forward to seeing your generosity."
+                msg1 = f"Hello {username}!!!,\nThank you for creating an account on our Platform. \n\nWe look forward to seeing your generosity."
                 msg2 = "\nHope you find it easy to find the right charity.\n--The CSR Platform Team."
                 message = msg1+msg2
                 recipient_list = [email,r_email]
@@ -145,7 +128,6 @@ def company_signup_page(request): # view for company signup page
         else:
             messages.info(request, "Passwords not matching.") #returns error message
             return redirect('/Company-sign-up-page')
-
         return redirect('/login')
 
     else:
@@ -216,7 +198,7 @@ def ngo_signup_page(request): # view for ngo signup page
                 )
                 rep.save()
                 subject = 'Registration completed Sucessfully'
-                msg1 = 'Hello'+username+'!!!,\nThank you for creating an account with our Platform.'
+                msg1 = f'Hello {username}!!!,\nThank you for creating an account with our Platform.'
                 msg2 = '\n\nWe look forward to seeing you help everyone.\n--The CSR Platform Team'
                 message = msg1 + msg2
                 recipient_list = [email,r_email]
@@ -224,49 +206,21 @@ def ngo_signup_page(request): # view for ngo signup page
         else:
             messages.info(request, "Passwords not matching.") #returns error message
             return redirect('/NGO-sign-up-page')
+
         return redirect("/login")
     else:
         return render(request, "registration/ngosignuppage.html")
 
-def login(request):
-    global WAIT,attempts
-    if WAIT==True:#If the user is to be made to wait, a timer for 30 seconds is set while the user is denied any controls
-        time.sleep(30)#Become inactive for 30 secs
-        WAIT=False;attempts=0
-        return render(request,"registration/login.html",{"WAIT":False})
-    if request.method=='POST':
-        attempts+=1
-        username= request.POST['username']
-        password= request.POST['password']
-
-        user= auth.authenticate(username=username,password=password) #default django authentication protocol that we are calling
-        if user is not None:
-            auth.login(request,user) #django function allows you to log in
-            return redirect(f"/dashboard/{username}")
-            attempts=0
-
-        else:
-            if attempts>=3: #If more than 3 attempts are made, the user's panel is frozen for 30 seconds
-                messages.info(request,"You have exceeded 3 attempts of logging in. Please hit refresh and wait for 30 seconds")
-                WAIT=True
-                return render(request,"registration/login.html",{'WAIT':True})
-   
-
-            messages.info(request, "Username or password is incorrect.")
-            return redirect("/login")
-    else:
-        return render(request, "registration/login.html")
-
-
+@snoop
+@login_required(login_url='/login')
 def dashboard(request, username):
-    
     if request.method=="GET": #edit 3
-        users=[]
+        users=[] 
         try:
-            data= CompanyTable.objects.get(company_name=username)
-            odt = NGOTable.objects.values_list('ngo_name',flat=True)
-            for user in odt:
-                users.append(user)
+            data = CompanyTable.objects.get(company_name=username)
+            # odt = NGOTable.objects.values_list('ngo_name',flat=True)
+            # for user in odt:
+            #     users.append(user) # for connection
             return render(request, "main/dashboard.html", {'about': data.description,
             'email': data.email,
             'phone': data.phone,
@@ -276,9 +230,9 @@ def dashboard(request, username):
             })
         except:
             data= NGOTable.objects.get(ngo_name=username)
-            odt = CompanyTable.objects.values_list('company_name',flat=True)
-            for user in odt:
-                users.append(user)
+            # odt = CompanyTable.objects.values_list('company_name',flat=True)
+            # for user in odt:
+            #     users.append(user) # for connection
             return render(request, "main/dashboard.html", {'about': data.description,
             'email': data.email,
             'phone': data.phone,
@@ -287,21 +241,84 @@ def dashboard(request, username):
             'users': users,
             'org_name': username
             })
+
+@login_required(login_url='/login')
+def search(request):
+    # the for = in html should match the value in brackets
+    if request.method=="POST":
+        cat = request.POST.get('category')#'NGO' - States if NGO or company
+        orgname = request.POST.get('orgname')#'He'- Basically organisation name
+        
+        emp_count = request.POST.get('emp_count')
+        cap= request.POST.get('cap')
+        state = request.POST.get('state') #drop-down box
+        sector = request.POST.get('sector')#drop-down box
+        sort_by = request.POST.get('sort_by')#'ngo_name' or 'company_name' 
+        order = request.POST.get('order') #- by ascending or descending
+
+        if cat == 'NGO':
+            data = NGOTable.objects.filter(ngo_name__icontains = orgname).exclude(ngo_name = client)# i here makes it non case sensitive
+            if cap != '':
+                data = data.filter(min_cap_reqd__range = (cap,cap + 10000))
+            if state != None:
+                data = data.filter(state__exact = state)#exact as the name suggests means exact value
+            if sector != None:
+                data = data.filter(sectors__in = sector)
+        elif cat == 'COMPANY':
+            data = CompanyTable.objects.filter(company_name__icontains = orgname).exclude(company_name = client)
+            if cap != '':
+                data = data.filter(cap_available__range = (cap ,cap + 10000))
+        #replace None by whatever default value is returned by HTML for not filling a column
+
+        if emp_count !='':
+            emp_count = int(emp_count)
+            data = data.filter(no_of_employees__range = (emp_count - 500,emp_count + 500))# range is the between and 
+
+        if sort_by != 'None':
+            if order  == 'Ascending':
+                data = data.order_by(sort_by)
+            elif order == 'Descending':
+                sort_by = '-'+sort_by
+                data = data.order_by(sort_by)
+
+        return render(request, 'main/results.html' , {'data': data})#edit1
+         #edit 2
+    else:
+        return render(request, 'main/search.html')  
+
+@login_required(login_url='/login')
+def search_result(request,username):
+    if request.method=="GET": #edit 3
+        try:
+            data = CompanyTable.objects.get(company_name=username)
+            return render(request, "main/othprofile.html", {'about': data.description,
+            'email': data.email,
+            'phone': data.phone,
+            'address': data.address,
+            'org_name': username,
+            'client': client
+            })
+        except:
+            data= NGOTable.objects.get(ngo_name=username)
+            return render(request, "main/othprofile.html", {'about': data.description,
+            'email': data.email,
+            'phone': data.phone,
+            'address': data.address,
+            'cert':data.pdf,
+            'org_name': username,
+            'client': client
+            })
             
-
-def logout(request):
-    auth.logout(request)#default django logout function
-    return redirect('')
-
 @snoop
 def connect(request):
     org_name = request.POST.get('user')
     connect_with = request.POST.get('connect_with')
     return HttpResponse('User will be sent a connection mail.')
 
-def search_result(request):
-    try:
-        val=request.GET.get('username')
-
-    except:
-        pass
+@snoop
+def mail(subject, message, recipient_list):
+    email_from = settings.EMAIL_HOST_USER
+    send_mail(subject,message,email_from,recipient_list,fail_silently=True)
+    
+def EMAILCHECK(Email):
+    return True#validate_email(Email,verify=True)

@@ -33,22 +33,22 @@
 
     <div class="md:flex mt-20 grid grid-cols-9 gap-2">
         <div class="col-start-1 col-end-3 gap-5">
-            <h1 class="underline decoration-indigo-500 text-justify text-5xl dark:text-black font-medium dark:text-black "> Welcome to your dashboard! </h1>
+            <h1 class="underline decoration-indigo-500 text-justify text-5xl dark:text-black font-medium dark:text-black "> Welcome to {{org_name}} dashboard! </h1>
         </div>
 
         <div class="col-end-6 col-span-3 ml-20">
             <form action="/search">
-                <button type="button " class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
+                <button type="button" class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
             px-10 py-2 text-center">
                 Search
                 </button>
             </form>
         </div>
         <div class="col-end-9 col-span-3">
-            <form action="/login">
-                <button type="button " class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
+            <form action="/dashboard/{{client}}">
+                <button type="hidden"  class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
             px-10 py-2 text-center ">
-                Log out.
+                Homepage
                 </button>
             </form>
         </div>
@@ -59,7 +59,7 @@
     </div>
 
     <div>
-        <h1 class=" text-indigo-600 font-extrabold underline decoration-stone-700 text-justify text-4xl dark:text-black font-medium dark:text-black mt-5 "> Your Profile </h1>
+        <h1 class=" text-indigo-600 font-extrabold underline decoration-stone-700 text-justify text-4xl dark:text-black font-medium dark:text-black mt-5 "> The Profile </h1>
     </div>
     <div class=" grid grid-cols-9 gap-1">
         <div class="col-start-1 col-end-4">
@@ -86,6 +86,7 @@
                 <p class="mb-2 text-xl text-medium font-normal tracking-tight text-stone-900 dark:text-white ">
                     {{address}}
                 </p>
+
             </div>
         </div>
     </div>

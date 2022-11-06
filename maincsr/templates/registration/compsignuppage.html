@@ -39,7 +39,7 @@
     </div>
     <div class=" grid grid-cols-6 gap-4">
         <div class="col-start-1 col-end-4">
-            <form class="bg-white shadow-xl rounded px-8 pt-6 pb-8 mb-4" method="post" action="" method="post">
+            <form class="bg-white shadow-xl rounded px-8 pt-6 pb-8 mb-4" method="post" action="company_signup_page">
                 {% csrf_token %}
                 <div>
                     {% for message in messages %}
@@ -139,7 +139,7 @@
                 </div>
                 <br>
                 <div>
-                    <button type="submit " class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-inndigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg
+                    <button type="submit" class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-inndigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg
                         text-base px-6 py-3.5 text-center mr-2 mb-2 ">
                     Submit
                     </button>
