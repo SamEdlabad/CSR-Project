@@ -97,14 +97,14 @@
      px-6 py-3.5 text-center mr-2 mb-2 ">
      {% csrf_token %}
     
-    <a href = "{{cert.url}}">View Your Certificate</a></button> {% endif %}
+    <a href = "{{cert.url}}">View Certificate</a></button> {% endif %}
 
     <br>
     <div>
         <form method="post" action="/connect/">
             {% csrf_token %}
-            <input type="hidden" id="user" name="user" value="{{org_name}}"> {% for username in users %}
-            <button class="GFG" id="connect_with" name="connect_with" type="submit" value="{{username}}">Connect with {{username}}</button><br> {% endfor %}
+            <button class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
+            px-10 py-2 text-center">Connect</button>
         </form>
     </div>
 </body>

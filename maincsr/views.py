@@ -6,13 +6,15 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.models import User, auth
 from django.contrib import messages #to display error messages
 from django.urls import reverse
-import time
+import time,datetime
 #from validate_email import validate_email#for email validation
 from django.conf import settings
 from django.core.mail import send_mail
 import snoop
 
-client = ''
+client = ''#stores current user's username
+connto=''#stores username of company/NGO to which a connection is to be sent
+conntype=''#stores values 'NGO' or 'Company' to help determine the recipent of the connection 
 attempts=0#no of attempts made
 WAIT=False#Condition that indicates whether if the User is to wait
 
@@ -121,7 +123,7 @@ def company_signup_page(request): # view for company signup page
 
                 subject = "Registration has been completed."
                 msg1 = f"Hello {username}!!!,\nThank you for creating an account on our Platform. \n\nWe look forward to seeing your generosity."
-                msg2 = "\nHope you find it easy to find the right charity.\n--The CSR Platform Team."
+                msg2 = f"\nHope you find it easy to find the right charity.\n--The CSR Platform Team."
                 message = msg1+msg2
                 recipient_list = [email,r_email]
                 mail(subject,message,recipient_list)
@@ -166,13 +168,13 @@ def ngo_signup_page(request): # view for ngo signup page
                 return redirect('/NGO-sign-up-page')
             elif NGORep.objects.filter(r_email=r_email).exists():
                 messages.info(request, "Representative email taken.")
-                return redirect('/Company-sign-up-page')
+                return redirect('/NGO-sign-up-page')
             elif not EMAILCHECK(email):
                 messages.info(request, "NGO Email invalid.")
-                return redirect('/Company-sign-up-page')
+                return redirect('/NGO-sign-up-page')
             elif not EMAILCHECK(r_email):
                 messages.info(request, "Representative email invalid.")
-                return redirect('/Company-sign-up-page')
+                return redirect('/NGO-sign-up-page')
             else:
                 user=User.objects.create_user(username=username, password= password , email=email, first_name=fname, last_name=lname) #password will be hashed in table
                 user.save()
@@ -221,14 +223,21 @@ def dashboard(request, username):
             # odt = NGOTable.objects.values_list('ngo_name',flat=True)
             # for user in odt:
             #     users.append(user) # for connection
+            ngos=[]
+            for i in NGOTable.objects.values_list('ngo_name'):
+                    ngos.append(i[0])
             return render(request, "main/dashboard.html", {'about': data.description,
             'email': data.email,
             'phone': data.phone,
             'address': data.address,
             'users': users,
-            'org_name': username
+            'org_name': username,
+            'ngos':ngos,
             })
         except:
+            comp=[]
+            for i in CompanyTable.objects.values_list('company_name'):
+                comp.append(i[0])
             data= NGOTable.objects.get(ngo_name=username)
             # odt = CompanyTable.objects.values_list('company_name',flat=True)
             # for user in odt:
@@ -239,9 +248,10 @@ def dashboard(request, username):
             'address': data.address,
             'cert':data.pdf,
             'users': users,
-            'org_name': username
+            'org_name': username,
+            'comp':comp,
             })
-
+@snoop
 @login_required(login_url='/login')
 def search(request):
     # the for = in html should match the value in brackets
@@ -259,15 +269,15 @@ def search(request):
         if cat == 'NGO':
             data = NGOTable.objects.filter(ngo_name__icontains = orgname).exclude(ngo_name = client)# i here makes it non case sensitive
             if cap != '':
-                data = data.filter(min_cap_reqd__range = (cap,cap + 10000))
-            if state != None:
+                data = data.filter(min_cap_reqd__range = (int(cap),int(cap) + 10000))
+            if state != '':
                 data = data.filter(state__exact = state)#exact as the name suggests means exact value
-            if sector != None:
+            if sector != '':
                 data = data.filter(sectors__in = sector)
         elif cat == 'COMPANY':
             data = CompanyTable.objects.filter(company_name__icontains = orgname).exclude(company_name = client)
             if cap != '':
-                data = data.filter(cap_available__range = (cap ,cap + 10000))
+                data = data.filter(cap_available__range = (int(cap) ,int(cap) + 10000))
         #replace None by whatever default value is returned by HTML for not filling a column
 
         if emp_count !='':
@@ -288,9 +298,13 @@ def search(request):
 
 @login_required(login_url='/login')
 def search_result(request,username):
+    global conntype 
+    global connto
+    connto=username
     if request.method=="GET": #edit 3
         try:
             data = CompanyTable.objects.get(company_name=username)
+            conntype="Company"
             return render(request, "main/othprofile.html", {'about': data.description,
             'email': data.email,
             'phone': data.phone,
@@ -300,6 +314,7 @@ def search_result(request,username):
             })
         except:
             data= NGOTable.objects.get(ngo_name=username)
+            conntype="NGO"
             return render(request, "main/othprofile.html", {'about': data.description,
             'email': data.email,
             'phone': data.phone,
@@ -309,11 +324,40 @@ def search_result(request,username):
             'client': client
             })
             
-@snoop
+"""@snoop
 def connect(request):
     org_name = request.POST.get('user')
     connect_with = request.POST.get('connect_with')
     return HttpResponse('User will be sent a connection mail.')
+"""
+@snoop
+def connect(request):
+    global connto, client , conntype 
+    print(client,connto,conntype)
+    dtval= datetime.datetime.now()
+    date=dtval.strftime("%x")
+    time=dtval.strftime("%X")
+    if conntype=="Company":
+        comp=Connections( #storing the appropriate details in connections table
+                        ngo_name=client,
+                        company_name=connto,
+                        initiator=client,
+                        status="No response",
+                        accdate=None,
+                        senddate=dtval,
+                    )
+        comp.save()
+    else:
+        ngo=Connections( #storing the appropriate details in connections table
+                    ngo_name=connto,
+                    company_name=client,
+                    initiator=client,
+                    status="No response",
+                    accdate=None,
+                    senddate=dtval,
+                )
+        ngo.save()
+    return redirect(f"/dashboard/{client}")
 
 @snoop
 def mail(subject, message, recipient_list):
