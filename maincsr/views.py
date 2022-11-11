@@ -216,16 +216,26 @@ def ngo_signup_page(request): # view for ngo signup page
 @snoop
 @login_required(login_url='/login')
 def dashboard(request, username):
+    global client #client variable may get deleted after any error is encountered, thus it saved again just in case
+    client=username
     if request.method=="GET": #edit 3
         users=[] 
-        try:
-            data = CompanyTable.objects.get(company_name=username)
-            # odt = NGOTable.objects.values_list('ngo_name',flat=True)
-            # for user in odt:
-            #     users.append(user) # for connection
+        try:#COMPANY DASHBOARD
             ngos=[]
+            data = CompanyTable.objects.get(company_name=username)
             for i in NGOTable.objects.values_list('ngo_name'):
                     ngos.append(i[0])
+            connpendC,connpendN,connacc=[],[],[] # connection pending for company, pending for NGO and  connection accepted
+            for k in Connections.objects.values_list('company_name','ngo_name','status'):#Queryset of connections directed to user
+                    if k[2]=="PendingC":
+                        if k[0]==username:
+                           connpendC.append(k[1])  
+                    elif k[2]=="PendingN":
+                        if k[0]==username:
+                           connpendN.append(k[1]) 
+                    elif k[2]=="Accepted":
+                        if k[0]==username:
+                           connacc.append(k[1])
             return render(request, "main/dashboard.html", {'about': data.description,
             'email': data.email,
             'phone': data.phone,
@@ -233,15 +243,27 @@ def dashboard(request, username):
             'users': users,
             'org_name': username,
             'ngos':ngos,
+            'connpendC':connpendC,#Pending connections on Company end
+            'connpendN':connpendN,#Pending connections on NGO end
+            'connacc':connacc #Accepted connections
             })
-        except:
+        except:#NGO DASHBOARD
             comp=[]
+            data= NGOTable.objects.get(ngo_name=username)
             for i in CompanyTable.objects.values_list('company_name'):
                 comp.append(i[0])
-            data= NGOTable.objects.get(ngo_name=username)
-            # odt = CompanyTable.objects.values_list('company_name',flat=True)
-            # for user in odt:
-            #     users.append(user) # for connection
+            connpendC,connpendN,connacc=[],[],[]# connection pending for company, pending for NGO and  connection accepted
+            for k in Connections.objects.values_list('ngo_name','company_name','status'):#Queryset of connections directed to user
+                    if k[2]=="PendingC":
+                        if k[0]==username:
+                           connpendC.append(k[1])  
+                    elif k[2]=="PendingN":
+                        if k[0]==username:
+                           connpendN.append(k[1]) 
+                    elif k[2]=="Accepted":
+                        if k[0]==username:
+                           connacc.append(k[1])
+            connections=Connections.objects.filter(ngo_name=username)
             return render(request, "main/dashboard.html", {'about': data.description,
             'email': data.email,
             'phone': data.phone,
@@ -250,9 +272,12 @@ def dashboard(request, username):
             'users': users,
             'org_name': username,
             'comp':comp,
+            'connpendC':connpendC,#Pending connections on Company end
+            'connpendN':connpendN,#Pending connections on NGO end
+            'connacc':connacc #Accepted connections
             })
 @snoop
-@login_required(login_url='/login')
+#@login_required(login_url='/login')
 def search(request):
     # the for = in html should match the value in brackets
     if request.method=="POST":
@@ -270,9 +295,9 @@ def search(request):
             data = NGOTable.objects.filter(ngo_name__icontains = orgname).exclude(ngo_name = client)# i here makes it non case sensitive
             if cap != '':
                 data = data.filter(min_cap_reqd__range = (int(cap),int(cap) + 10000))
-            if state != '':
+            if state != 'None':
                 data = data.filter(state__exact = state)#exact as the name suggests means exact value
-            if sector != '':
+            if sector != 'None':
                 data = data.filter(sectors__in = sector)
         elif cat == 'COMPANY':
             data = CompanyTable.objects.filter(company_name__icontains = orgname).exclude(company_name = client)
@@ -299,21 +324,31 @@ def search(request):
 @login_required(login_url='/login')
 def search_result(request,username):
     global conntype 
+    global client
     global connto
     connto=username
+    status=""
     if request.method=="GET": #edit 3
-        try:
+        try:#VIEWING AN COMPANY'S DASHBOARD
             data = CompanyTable.objects.get(company_name=username)
+            for a in Connections.objects.values_list('ngo_name','company_name','status'):
+                if a[0]==client and a[1]==username:
+                       status=a[2]
             conntype="Company"
             return render(request, "main/othprofile.html", {'about': data.description,
             'email': data.email,
             'phone': data.phone,
             'address': data.address,
             'org_name': username,
-            'client': client
+            'client': client,
+            'status':status,
+            'conntype':conntype
             })
-        except:
+        except:#VIEWING AN NGO'S DASHBOARD
             data= NGOTable.objects.get(ngo_name=username)
+            for a in Connections.objects.values_list('company_name','ngo_name','status'):
+                if a[0]==client and a[1]==username:
+                       status=a[2]
             conntype="NGO"
             return render(request, "main/othprofile.html", {'about': data.description,
             'email': data.email,
@@ -321,7 +356,9 @@ def search_result(request,username):
             'address': data.address,
             'cert':data.pdf,
             'org_name': username,
-            'client': client
+            'client': client,
+            'status':status,
+            'conntype':conntype
             })
             
 """@snoop
@@ -330,33 +367,120 @@ def connect(request):
     connect_with = request.POST.get('connect_with')
     return HttpResponse('User will be sent a connection mail.')
 """
-@snoop
+#@snoop
 def connect(request):
     global connto, client , conntype 
-    print(client,connto,conntype)
     dtval= datetime.datetime.now()
-    date=dtval.strftime("%x")
-    time=dtval.strftime("%X")
-    if conntype=="Company":
-        comp=Connections( #storing the appropriate details in connections table
-                        ngo_name=client,
-                        company_name=connto,
-                        initiator=client,
-                        status="No response",
-                        accdate=None,
-                        senddate=dtval,
-                    )
-        comp.save()
-    else:
-        ngo=Connections( #storing the appropriate details in connections table
-                    ngo_name=connto,
-                    company_name=client,
-                    initiator=client,
-                    status="No response",
-                    accdate=None,
-                    senddate=dtval,
-                )
-        ngo.save()
+    if request.method=="POST":
+        if conntype=="Company":#If connection request directed to a company
+            if 'Acceptance' not in request.POST and 'Refusal' not in request.POST:
+                comp=Connections( #storing the appropriate details in connections table
+                                ngo_name=client,
+                                company_name=connto,
+                                initiator=client,
+                                status="PendingC",
+                                respdate=None,
+                                senddate=dtval,
+                            )
+                comp.save()
+            else:
+                NGOid=NGOTable.objects.filter(ngo_name=client).values_list('id', flat=True).first()
+                NGOemail=NGOTable.objects.get(ngo_name=client).email
+                Compid=CompanyTable.objects.filter(company_name=connto).values_list('id', flat=True).first()
+                Compemail=CompanyTable.objects.get(company_name=connto).email
+                if 'Acceptance' in request.POST:
+                    Connections.objects.filter(ngo_name=client,company_name=connto).update(status="Accepted",respdate=dtval)
+                    for a in NGORep.objects.values_list('ngo_id_id','fname','lname','r_phone','r_email'):
+                        if a[0]==NGOid:
+                            for b in CompRep.objects.values_list('company_id_id','fname','lname','r_phone','r_email'):
+                                if b[0]==Compid:
+                                        subject= "Connection made!"
+                                        msg1 = f"Hello {client}!!!,\nThe Company,{connto} has agreed to connect to your NGO."
+                                        msg2 = f"\nYou may contact the Company representative whose details are mentioned below"
+                                        msg3 = f"\nName : {b[1]} {b[2]}\nphone : {b[3]}\nemail : {b[4]}"
+                                        msg4 = f"\nHope our contribution may help your NGO achieve its goals.\n--The CSR Platform Team"
+                                        message = msg1+msg2+msg3+msg4
+                                        recipient_list = [NGOemail,]
+                                        mail(subject,message,recipient_list)
+
+                                        subject = "Connection made!"
+                                        msg1 = f"Hello {connto}!!!,\nThe NGO,{client} has agreed to connect to your Company."
+                                        msg2 = f"\nYou may contact the NGO representative whose details are mentioned below"
+                                        msg3 = f"\nName : {a[1]} {a[2]}\nphone : {a[3]}\nemail : {a[4]}"
+                                        msg4 = f"\nHope our contribution may help your Company achieve its goals.\n--The CSR Platform Team"
+                                        message = msg1+msg2+msg3+msg4
+                                        recipient_list = [Compemail,]
+                                        mail(subject,message,recipient_list)
+                            
+                                        
+
+                elif 'Refusal' in request.POST:
+                    Connections.objects.filter(ngo_name=client,company_name=connto).update(status="Refused",respdate=dtval)
+                    for a in NGORep.objects.values_list('ngo_id_id','fname','lname','r_phone','r_email'):
+                        if a[0]==NGOid:
+                            for b in CompRep.objects.values_list('company_id_id','fname','lname','r_phone','r_email'):
+                                if b[0]==Compid:
+                                        subject= "Connection request denied"
+                                        msg1 = f"Hello {client},\nThe Company,{connto} has denied to connect to your NGO."
+                                        msg2 = f"\nWe urge you to keep trying. You shall certainly succeed.\n--The CSR Platform Team"
+                                        message = msg1+msg2
+                                        recipient_list = [NGOemail,]
+                                        mail(subject,message,recipient_list)
+
+        else:#If connection request directed to a NGO
+            Compid=CompanyTable.objects.filter(company_name=client).values_list('id', flat=True).first()
+            Compemail=CompanyTable.objects.get(company_name=client).email
+            NGOid=NGOTable.objects.filter(ngo_name=connto).values_list('id', flat=True).first()
+            NGOemail=NGOTable.objects.get(ngo_name=connto).email
+            if 'Acceptance' not in request.POST and 'Refusal' not in request.POST:
+                ngo=Connections( #storing the appropriate details in connections table
+                            ngo_name=connto,
+                            company_name=client,
+                            initiator=client,
+                            status="PendingN",
+                            respdate=None,
+                            senddate=dtval,
+                        )
+                ngo.save()
+            else:
+                if 'Acceptance' in request.POST:
+                    Connections.objects.filter(ngo_name=connto,company_name=client).update(status="Accepted",respdate=dtval)
+                    for a in CompRep.objects.values_list('company_id_id','fname','lname','r_phone','r_email'):
+                        if a[0]==Compid:
+                            for b in NGORep.objects.values_list('ngo_id_id','fname','lname','r_phone','r_email'):
+                                if b[0]==NGOid:
+                                        subject = "Connection made!"
+                                        msg1 = f"Hello {client}!!!,\nThe NGO,{connto} has agreed to connect to your Company."
+                                        msg2 = f"\nYou may contact the NGO representative whose details are mentioned below"
+                                        msg3 = f"\nName : {b[1]} {b[2]}\nphone : {b[3]}\nemail : {b[4]}"
+                                        msg4 = f"\nHope our contribution may help your Company achieve its goals.\n--The CSR Platform Team"
+                                        message = msg1+msg2+msg3+msg4
+                                        recipient_list = [Compemail,]
+                                        mail(subject,message,recipient_list)
+
+                                        subject= "Connection made!"
+                                        msg1 = f"Hello {connto}!!!,\nThe Company,{client} has agreed to connect to your NGO."
+                                        msg2 = f"\nYou may contact the Company representative whose details are mentioned below"
+                                        msg3 = f"\nName : {a[1]} {a[2]}\nphone : {a[3]}\nemail : {a[4]}"
+                                        msg4 = f"\nHope our contribution may help your NGO achieve its goals.\n--The CSR Platform Team"
+                                        message = msg1+msg2+msg3+msg4
+                                        recipient_list = [NGOemail,]
+                                        mail(subject,message,recipient_list)
+
+                                        
+                elif 'Refusal' in request.POST:
+                    Connections.objects.filter(ngo_name=connto,company_name=client).update(status="Refused",respdate=dtval)
+                    for a in CompRep.objects.values_list('company_id_id','fname','lname','r_phone','r_email'):
+                        if a[0]==Compid:
+                            for b in NGORep.objects.values_list('ngo_id_id','fname','lname','r_phone','r_email'):
+                                if b[0]==NGOid:
+                                        subject= "Connection request denied"
+                                        msg1 = f"Hello {client},\nThe NGO,{connto} has denied to connect to your Company."
+                                        msg2 = f"\nWe hope you do find another partner NGO.\n--The CSR Platform Team"
+                                        message = msg1+msg2
+                                        recipient_list = [Compemail,]
+                                        mail(subject,message,recipient_list)
+
     return redirect(f"/dashboard/{client}")
 
 @snoop

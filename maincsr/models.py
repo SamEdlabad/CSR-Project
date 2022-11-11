@@ -71,7 +71,7 @@ class Connections(models.Model):
     company_name=models.CharField(max_length=256)
     initiator=models.CharField(max_length=256)
     status=models.CharField(max_length=20)
-    accdate=models.DateTimeField(auto_now=False, auto_now_add=False, null=True)
+    respdate=models.DateTimeField(auto_now=False, auto_now_add=False, null=True)
     senddate=models.DateTimeField(auto_now=False, auto_now_add=False)
     
     def __str__(self):

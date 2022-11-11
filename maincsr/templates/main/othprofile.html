@@ -101,11 +101,34 @@
 
     <br>
     <div>
-        <form method="post" action="/connect/">
-            {% csrf_token %}
+        <form method="POST" action="/connect/">
+            {% csrf_token %} 
+            {% if conntype == "Company" and status == "PendingC" or conntype == "NGO" and status == "PendingN" %}
+            <center><div class="p-5 h-30 w-2/3 text-center bg-yellow-500 rounded-lg">Request has been sent. Kindly wait for the response.</div></center>
+
+            {% elif conntype == "NGO" and status == "PendingC" or conntype == "Company" and status == "PendingN" %}
+            <center><div class="p-5 h-30 w-2/3 text-center rounded-lg">
+            Do you accept the request?:
+            <button class=" text-white bg-gradient-to-r from-lime-500 via-lime-600 to-lime-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-lime-300 dark:focus:ring-lime-800 font-medium rounded-lg text-base
+            px-10 py-2 text-center" name="Acceptance">Yes</button>
+            <button class=" text-white bg-gradient-to-r from-red-500 via-red-600 to-red-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-base
+            px-10 py-2 text-center" name="Refusal">No</button>
+            </div></center>
+
+            {% elif status == "Accepted"%}
+            <center><div class="p-5 h-30 w-2/3 text-center bg-lime-500 rounded-lg">Connection accepted! Check your inbox </div></center>
+
+            {% elif status == "Refused"%}
+            <center><div class="p-5 h-30 w-2/3 text-center bg-red-500 rounded-lg">Connection Rejected! </div></center>
+
+            {% else %}
+            <center><div class="p-5 h-30 w-2/3 text-center rounded-lg">
             <button class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
-            px-10 py-2 text-center">Connect</button>
+            px-10 py-2 text-center">Send connection request?</button>
+            </div></center>
+            {% endif %}
         </form>
+        
     </div>
 </body>
 
