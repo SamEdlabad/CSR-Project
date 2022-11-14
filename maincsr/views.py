@@ -14,7 +14,7 @@ import snoop
 
 client = ''#stores current user's username
 connto=''#stores username of company/NGO to which a connection is to be sent
-conntype=''#stores values 'NGO' or 'Company' to help determine the recipent of the connection 
+conntype=''#stores values 'NGO' or 'Company' to help determine the recipient of the connection 
 attempts=0#no of attempts made
 WAIT=False#Condition that indicates whether if the User is to wait
 
@@ -54,7 +54,7 @@ def login_request(request):
     else:
         return render(request, "registration/login.html")
 
-@login_required(login_url='/login')
+@snoop
 def logout_request(request):
     logout(request)#default django logout function
     return redirect('/home')
@@ -264,20 +264,21 @@ def dashboard(request, username):
                         if k[0]==username:
                            connacc.append(k[1])
             connections=Connections.objects.filter(ngo_name=username)
-            return render(request, "main/dashboard.html", {'about': data.description,
+            context = {'about': data.description,
             'email': data.email,
             'phone': data.phone,
             'address': data.address,
-            'cert':data.pdf,
             'users': users,
             'org_name': username,
             'comp':comp,
             'connpendC':connpendC,#Pending connections on Company end
             'connpendN':connpendN,#Pending connections on NGO end
-            'connacc':connacc #Accepted connections
-            })
+            'connacc':connacc} #Accepted connections
+            if data.pdf != '':
+                context['cert'] = data.pdf
+            return render(request, "main/dashboard.html",context)
 @snoop
-#@login_required(login_url='/login')
+@login_required(login_url='/login')
 def search(request):
     # the for = in html should match the value in brackets
     if request.method=="POST":
@@ -350,24 +351,20 @@ def search_result(request,username):
                 if a[0]==client and a[1]==username:
                        status=a[2]
             conntype="NGO"
-            return render(request, "main/othprofile.html", {'about': data.description,
+            context = {'about': data.description,
             'email': data.email,
             'phone': data.phone,
             'address': data.address,
-            'cert':data.pdf,
             'org_name': username,
             'client': client,
             'status':status,
-            'conntype':conntype
-            })
+            'conntype':conntype}
+            if data.pdf != '':
+                context['cert'] = data.pdf
+            return render(request, "main/othprofile.html", context)
             
-"""@snoop
-def connect(request):
-    org_name = request.POST.get('user')
-    connect_with = request.POST.get('connect_with')
-    return HttpResponse('User will be sent a connection mail.')
-"""
-#@snoop
+@snoop
+@login_required(login_url='/login')
 def connect(request):
     global connto, client , conntype 
     dtval= datetime.datetime.now()

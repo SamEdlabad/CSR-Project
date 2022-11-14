@@ -45,7 +45,7 @@
             </form>
         </div>
         <div class="col-end-9 col-span-3">
-            <form action="/login">
+            <form action="/logout">
                 <button type="button " class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
             px-10 py-2 text-center ">
                 Log out.
@@ -177,7 +177,8 @@
      px-6 py-3.5 text-center mr-2 mb-2 ">
      {% csrf_token %}
     
-    <a href = "{{cert.url}}">View Your Certificate</a></button> {% endif %}
+    <a href = "{{cert.url}}">View Your Certificate</a></button> 
+    {% endif %}
 
     <br>
     <div>
