@@ -151,6 +151,8 @@ def ngo_signup_page(request): # view for ngo signup page
         lname= request.POST['lname']
         r_email= request.POST['r_email']
         r_phone_no= request.POST['r_phone_no']
+        state = request.POST.get('state') #drop-down box
+        sector = request.POST.get('sector')#drop-down box
         pdf=request.FILES.get("cert")
         
         if password==password_check:
@@ -187,7 +189,10 @@ def ngo_signup_page(request): # view for ngo signup page
                     address= address,
                     description= description,
                     min_cap_reqd= capital_reqd,
-                    pdf=pdf
+                    pdf=pdf,
+                    state=state,
+                    sectors=sector
+
                 )
                 ngo.save()
                 rep= NGORep(
@@ -486,4 +491,4 @@ def mail(subject, message, recipient_list):
     send_mail(subject,message,email_from,recipient_list,fail_silently=True)
     
 def EMAILCHECK(Email):
-    return True#validate_email(Email,verify=True)
+    return True #validate_email(Email,verify=True)
