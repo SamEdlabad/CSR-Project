@@ -64,3 +64,15 @@ class NGORep(models.Model):
 
     def __str__(self):
         return f"{self.fname} {self.lname}"
+
+class Connections(models.Model):
+    connid=models.AutoField(primary_key=True)
+    ngo_name = models.CharField(max_length=256)
+    company_name=models.CharField(max_length=256)
+    initiator=models.CharField(max_length=256)
+    status=models.CharField(max_length=20)
+    respdate=models.DateTimeField(auto_now=False, auto_now_add=False, null=True)
+    senddate=models.DateTimeField(auto_now=False, auto_now_add=False)
+    
+    def __str__(self):
+        return f"{self.ngo_name} {self.company_name}"

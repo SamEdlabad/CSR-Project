@@ -66,8 +66,9 @@
                 -->
                 <br>
                 <div class="flex items-center justify-between">
-                    <button type="submit" class={% if WAIT == True %}"bg-indigo-400 hover:bg-indigo-600 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline"
-                    {% else %}"bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline"{% endif %}>
+                    {% csrf_token %}
+                    <button type="submit" class= {% if WAIT == True %}"bg-indigo-400 hover:bg-indigo-600 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline"
+                    {% else %}"bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-1 px-2 rounded focus:outline-none focus:shadow-outline" {% endif %}>
                         {% if WAIT == True %}
                         Refresh
                         {% else %}
