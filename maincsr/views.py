@@ -15,13 +15,16 @@ import snoop
 client = ''#stores current user's username
 connto=''#stores username of company/NGO to which a connection is to be sent
 conntype=''#stores values 'NGO' or 'Company' to help determine the recipient of the connection 
+cttype = ''#stores type of client
 attempts=0#no of attempts made
 WAIT=False#Condition that indicates whether if the User is to wait
 
 def home(request): # view for homepage
+    
     return render(request, "main/home.html")
 
 def signup_page(request): # view for general signup page
+    
     return render(request, "main/signuppage.html")
 
 def login_request(request):
@@ -56,6 +59,7 @@ def login_request(request):
 
 @snoop
 def logout_request(request):
+    
     logout(request)#default django logout function
     return redirect('/home')
 
@@ -223,6 +227,7 @@ def ngo_signup_page(request): # view for ngo signup page
 def dashboard(request, username):
     global client #client variable may get deleted after any error is encountered, thus it saved again just in case
     client=username
+    
     if request.method=="GET": #edit 3
         users=[] 
         try:#COMPANY DASHBOARD
@@ -282,23 +287,28 @@ def dashboard(request, username):
             if data.pdf != '':
                 context['cert'] = data.pdf
             return render(request, "main/dashboard.html",context)
-@snoop
+
 @login_required(login_url='/login')
+@snoop
 def search(request):
     # the for = in html should match the value in brackets
     if request.method=="POST":
         cat = request.POST.get('category')#'NGO' - States if NGO or company
         orgname = request.POST.get('orgname')#'He'- Basically organisation name
-        
         emp_count = request.POST.get('emp_count')
         cap= request.POST.get('cap')
         state = request.POST.get('state') #drop-down box
         sector = request.POST.get('sector')#drop-down box
         sort_by = request.POST.get('sort_by')#'ngo_name' or 'company_name' 
         order = request.POST.get('order') #- by ascending or descending
-
+        global cttype
         if cat == 'NGO':
-            data = NGOTable.objects.filter(ngo_name__icontains = orgname).exclude(ngo_name = client)# i here makes it non case sensitive
+            data = NGOTable.objects.filter(ngo_name__icontains = orgname)# i here makes it non case sensitive
+            
+            data = data.exclude(ngo_name = client)
+            for i in data:
+                print(i)
+            cttype = 'NGO'
             if cap != '':
                 data = data.filter(min_cap_reqd__range = (int(cap),int(cap) + 10000))
             if state != 'None':
@@ -307,6 +317,7 @@ def search(request):
                 data = data.filter(sectors__in = sector)
         elif cat == 'COMPANY':
             data = CompanyTable.objects.filter(company_name__icontains = orgname).exclude(company_name = client)
+            cttype = 'Company'
             if cap != '':
                 data = data.filter(cap_available__range = (int(cap) ,int(cap) + 10000))
         #replace None by whatever default value is returned by HTML for not filling a column
@@ -334,6 +345,7 @@ def search_result(request,username):
     global connto
     connto=username
     status=""
+    
     if request.method=="GET": #edit 3
         try:#VIEWING AN COMPANY'S DASHBOARD
             data = CompanyTable.objects.get(company_name=username)
@@ -348,7 +360,8 @@ def search_result(request,username):
             'org_name': username,
             'client': client,
             'status':status,
-            'conntype':conntype
+            'conntype':conntype,
+            'clienttype':cttype
             })
         except:#VIEWING AN NGO'S DASHBOARD
             data= NGOTable.objects.get(ngo_name=username)
@@ -363,7 +376,9 @@ def search_result(request,username):
             'org_name': username,
             'client': client,
             'status':status,
-            'conntype':conntype}
+            'conntype':conntype,
+            'clienttype':cttype
+            }
             if data.pdf != '':
                 context['cert'] = data.pdf
             return render(request, "main/othprofile.html", context)
@@ -487,8 +502,8 @@ def connect(request):
 
 @snoop
 def mail(subject, message, recipient_list):
-    email_from = settings.EMAIL_HOST_USER
-    send_mail(subject,message,email_from,recipient_list,fail_silently=True)
-    
+    # email_from = settings.EMAIL_HOST_USER
+    # send_mail(subject,message,email_from,recipient_list,fail_silently=True)
+    pass
 def EMAILCHECK(Email):
     return True #validate_email(Email,verify=True)

@@ -131,10 +131,12 @@
 
             {% else %}
             <center>
+                {% if clienttype != conntype%}
                 <div class="p-5 h-30 w-2/3 text-center rounded-lg">
                     <button class=" text-white bg-gradient-to-r from-indigo-500 via-indigo-600 to-indigo-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-indigo-300 dark:focus:ring-indigo-800 font-medium rounded-lg text-base
             px-10 py-2 text-center">Send connection request?</button>
                 </div>
+                {% endif %}
             </center>
             {% endif %}
         </form>

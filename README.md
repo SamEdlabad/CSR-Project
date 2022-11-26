@@ -20,7 +20,8 @@ write:
 import pymysql
 pymysql.install_as_MySQLdb()
 ...
-
+install snoop
+pip3 install snoop
 then run the file once to install MySQLdb to your site packages.
 
 Import py3dns and validate_email:
